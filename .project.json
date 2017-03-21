@@ -37,7 +37,7 @@
   },
   "hcpdeploy": {
     "account": "i068981trial",
-    "name": "comsaptest",
-    "lastVersionWeTriedToDeploy": "1.0.13"
+    "name": "expenseplanning",
+    "lastVersionWeTriedToDeploy": "1.0.0"
   }
 }

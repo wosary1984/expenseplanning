@@ -1,63 +1,22 @@
-<mvc:View controllerName="com.sap.testcom.sap.test.controller.main" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:mvc="sap.ui.core.mvc"
+<mvc:View controllerName="com.sap.expenseplanning.controller.main" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:mvc="sap.ui.core.mvc"
 	displayBlock="true" xmlns="sap.m">
 	<App>
 		<pages>
 			<Page title="{i18n>title}">
 				<content>
-					<List headerText="Test Action">
-						<CustomListItem>
-							<Button text="OAuth MY323481" press="onMY323481Clicked"/>
-							<Button text="Basic MY323481" press="onMY323481BasicClicked"/>
-							<Button text="OAuth my500047" press="onmy500047Clicked"/>
-							<Button text="OAuth my500047" press="500047_1"/>
-						</CustomListItem>
-						<CustomListItem>
-							<VBox><Link text="SSO:my323481" href="https://my323481-sso.crm.ondemand.com"/></VBox>
-							<VBox><Link text="SSO:my500047" href="HTTPS://my500047-sso.c4c.saphybriscloud.cn"/></VBox>
-						</CustomListItem>
-					</List>
-					<List id="c4c_data" items="{path:'/',sorter:{ path:'DimensionLevel'}}" headerText="Expense Plan" growing="true" growingThreshold="4"
+					<List id="c4c_data" items="{path:'/',sorter:{ path:'ExpensePlan'}}" headerText="Expense Plan" growing="true" growingThreshold="4"
 						growingScrollToLoad="false">
-						<StandardListItem title="{ExpensePlan}" info="{DimensionType}" description="{Name}" iconDensityAware="false" iconInset="false"/>
-					</List>
-					<Table id="c4c_data2" inset="false" items="{ path: '/', sorter: { path: 'DimensionLevel' } }">
 						<headerToolbar>
 							<Toolbar>
-								<Title text="Expense Plan" level="H2"/>
+								<Title text="Expense Planning" level="H2"/>
+								<ToolbarSpacer/>
+								<Button icon="sap-icon://refresh" press="handleRefresh"/>
 							</Toolbar>
 						</headerToolbar>
-						<columns>
-							<Column width="12em">
-								<Text text="Plan Id"/>
-							</Column>
-							<Column minScreenWidth="Tablet" demandPopin="true">
-								<Text text="Dimension Type"/>
-							</Column>
-							<Column minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
-								<Text text="Dimension Level"/>
-							</Column>
-							<Column minScreenWidth="Tablet" demandPopin="true" hAlign="Center">
-								<Text text="Name"/>
-							</Column>
-							<Column hAlign="Right">
-								<Text text="Amount"/>
-							</Column>
-						</columns>
 						<items>
-							<ColumnListItem>
-								<cells>
-									<ObjectIdentifier title="{UUID}" text="{ExpensePlan}"/>
-									<Text text="{DimensionType}"/>
-									<Text text="{DimensionLevel}"/>
-									<Text text="{Name}"/>
-									<ObjectNumber
-										number="{ parts:[{path:'Amount/content'},{path:'Amount/currencyCode'}], type: 'sap.ui.model.type.Currency', formatOptions: {showMeasure: false} }"
-										unit="{Amount/currencyCod}"/>
-								</cells>
-							</ColumnListItem>
+							<StandardListItem title="{ExpensePlan}" description="{ExpensePlanDesc}" iconDensityAware="false" iconInset="false"/>
 						</items>
-					</Table>
-					
+					</List>
 				</content>
 			</Page>
 		</pages>
