@@ -8,8 +8,8 @@
 						growingScrollToLoad="false">
 						<headerToolbar>
 							<Toolbar>
-								<Title text="Expense Planning" level="H2"/>
 								<ToolbarSpacer/>
+								<Button icon="sap-icon://create" press="handleCreate"/>
 								<Button icon="sap-icon://refresh" press="handleRefresh"/>
 							</Toolbar>
 						</headerToolbar>
