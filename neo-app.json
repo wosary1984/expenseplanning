@@ -19,19 +19,11 @@
       },
       "description": "SAPUI5 Test Resources"
     },
-     {
-      "path": "/C4C-MY323481",
-      "target": {
-        "type": "destination",
-        "name": "C4C-MY323481"
-      },
-      "description": "C4C DESTINATION"
-    },
     {
-      "path": "/C4C-MY323481-BASIC",
+      "path": "/C4C-my500047-BASIC",
       "target": {
         "type": "destination",
-        "name": "C4C-MY323481-BASIC"
+        "name": "C4C-my500047-BASIC"
       },
       "description": "C4C DESTINATION"
     },

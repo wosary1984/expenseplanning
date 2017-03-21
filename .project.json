@@ -6,8 +6,8 @@
   "build": {
     "targetFolder": "dist",
     "sourceFolder": "webapp",
-    "buildRequired": true,
-    "lastBuildDateTime": "Mon, 20 Mar 2017 08:43:47 GMT"
+    "buildRequired": false,
+    "lastBuildDateTime": "Tue, 21 Mar 2017 06:42:37 GMT"
   },
   "generation": [
     {
@@ -38,6 +38,6 @@
   "hcpdeploy": {
     "account": "i068981trial",
     "name": "expenseplanning",
-    "lastVersionWeTriedToDeploy": "1.0.0"
+    "lastVersionWeTriedToDeploy": "1.0.1"
   }
 }
