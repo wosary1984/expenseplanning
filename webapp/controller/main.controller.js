@@ -1,36 +1,32 @@
 sap.ui.define([
-	"sap/ui/core/mvc/Controller"
-], function(Controller) {
+	"com/sap/expenseplanning/controller/BaseController",
+	"com/sap/expenseplanning/util/AjaxUtil"
+], function(BaseController, AjaxUtil) {
 	"use strict";
 
-	return Controller.extend("com.sap.expenseplanning.controller.main", {
-		c4c_MY323481_basic_destination: "C4C-MY323481-BASIC",
-		c4c_MY323481_destination: "C4C-MY323481",
-		c4c_my500047_destination: "c4c-my500047",
-		c4c_my500047_basic_destination: "C4C-my500047-BASIC",
-		c4c_service_destination: "SAP_CLOUD_EXT_SERVICE",
-		c4c_relative_path: "/sap/c4c/odata/cust/v1/c4cext/",
-
+	return BaseController.extend("com.sap.expenseplanning.controller.main", {
 		initFunction: function() {
+			var doneCallback = function(data) {
+				var oModel = new sap.ui.model.json.JSONModel();
+				oModel.setData(data.d.results);
+				var oList = this.getView().byId("c4c_data");
+				oList.setModel(oModel);
+				oList.setBusy(false);
+			};
+
+			var failCallback = function() {};
+
+			var alwaysCallback = function() {
+				var oList = this.getView().byId("c4c_data");
+				oList.setBusy(false);
+			};
+
 			var sUrl = this.c4c_my500047_basic_destination + this.c4c_relative_path +
 				"BO_ExpensePlanRootCollection?$format=json&$expand=BO_ExpensePlanExpenseNode";
 			var oList = this.getView().byId("c4c_data");
 			oList.setBusy(true);
-			$.ajax({
-				url: sUrl,
-				async: true,
-				type: "GET",
-				dataType: "json",
-				contentType: "application/json"
-			}).done(function(data) {
-				var oModel = new sap.ui.model.json.JSONModel();
-				oModel.setData(data.d.results);
-				oList.setModel(oModel);
-				oList.setBusy(false);
-			}).fail(function(error) {
-				console.error(error);
-				oList.setBusy(false);
-			});
+			return AjaxUtil.asynchGetJSON(this,
+				sUrl, doneCallback, failCallback, alwaysCallback);
 		},
 
 		handleRefresh: function(oEvent) {
