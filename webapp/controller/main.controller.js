@@ -38,6 +38,12 @@ sap.ui.define([
 			oCreateDialog.open();
 		},
 
+		handleDlgNext: function(oEvent) {
+			var oWizard = sap.ui.getCore().byId("CreateExpensePlanWizard");
+			if (oWizard)
+				oWizard.nextStep();
+		},
+
 		onInit: function(evt) {
 			this.initFunction();
 		},
@@ -69,8 +75,20 @@ sap.ui.define([
 
 		handleDlgAfterClose: function() {
 			if (this.oCreateDialog) {
-				return this.oCreateDialog.destroy();
+				this.oCreateDialog.destroy();
+				this.oCreateDialog = null;
 			}
+		},
+
+		basicInfoValidation: function(oEvent) {
+			var oWizard = sap.ui.getCore().byId("CreateExpensePlanWizard");
+			oWizard.validateStep(sap.ui.getCore().byId("BasicStep"));
+		},
+
+		dimensionValidation: function(oEvent) {
+			var oWizard = sap.ui.getCore().byId("CreateExpensePlanWizard");
+			if (oWizard)
+				oWizard.validateStep(sap.ui.getCore().byId("DimensionStep"));
 		}
 
 	});
