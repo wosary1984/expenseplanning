@@ -1,0 +1,32 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout">
+	<Dialog title="Dialog" contentWidth="60%" contentHeight="50%" draggable="false" resizable="true" afterClose="handleDlgAfterClose">
+		<content>
+			<NavContainer id="navCon" width="98%" height="16em" class="navContainerControl sapUiSmallMarginBottom">
+				<Page id="p1" title="Page 1">
+					<footer>
+						<Toolbar><Button text="Action 1"/></Toolbar>
+					</footer>
+				</Page>
+				<Page id="p2" title="Page 2">
+					<footer>
+						<Toolbar><Button text="Action 2"/></Toolbar>
+					</footer>
+				</Page>
+				<Page id="p3" title="Page 3">
+					<footer>
+						<Toolbar><Button text="Action 3"/></Toolbar>
+					</footer>
+				</Page>
+				<Page id="p4" title="Page 4">
+					<footer>
+						<Toolbar><Button text="Action 4"/></Toolbar>
+					</footer>
+				</Page>
+			</NavContainer>
+		</content>
+		<buttons>
+			<Button text="Next" press="handleDlgNext"></Button>
+			<Button text="Close" press="handleDlgClose"></Button>
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>

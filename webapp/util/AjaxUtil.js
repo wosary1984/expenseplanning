@@ -1,5 +1,4 @@
 jQuery.sap.declare("com.sap.expenseplanning.util.AjaxUtil");
-
 com.sap.expenseplanning.util.AjaxUtil = {
 	asynchGetJSON: function(thiz, sPath, fDoneCallback, fFailCallback, fAlwaysCallback) {
 		return jQuery.ajax({

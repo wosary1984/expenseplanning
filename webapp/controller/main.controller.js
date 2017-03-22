@@ -33,8 +33,45 @@ sap.ui.define([
 			this.initFunction();
 		},
 
+		handleCreate: function(oEvent) {
+			var oCreateDialog = this._getDialog();
+			oCreateDialog.open();
+		},
+
 		onInit: function(evt) {
 			this.initFunction();
+		},
+
+		_getDialog: function() {
+			if (this.oCreateDialog) {
+				return this.oCreateDialog;
+			}
+
+			// associate controller with the fragment
+			this.oCreateDialog = sap.ui.xmlfragment("com.sap.expenseplanning.view.wizard", this);
+			this.getView().addDependent(this.oCreateDialog);
+
+			this.getView().setModel(new sap.ui.model.resource.ResourceModel({
+				bundleName: "com.sap.expenseplanning.i18n.i18n"
+			}), "i18n");
+
+			// toggle compact style
+			jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this.oCreateDialog);
+
+			return this.oCreateDialog;
+		},
+
+		handleDlgClose: function() {
+			if (this.oCreateDialog) {
+				return this.oCreateDialog.close();
+			}
+		},
+
+		handleDlgAfterClose: function() {
+			if (this.oCreateDialog) {
+				return this.oCreateDialog.destroy();
+			}
 		}
+
 	});
 });
