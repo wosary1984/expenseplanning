@@ -1,0 +1,13 @@
+#Password=<< Existing password/certificate removed on export >>
+#
+#Wed Mar 22 03:32:36 UTC 2017
+Description=C4C-my500047-BASIC
+Type=HTTP
+Authentication=BasicAuthentication
+WebIDEUsage=odata_gen
+Name=C4C-my500047-BASIC
+WebIDEEnabled=true
+CloudConnectorVersion=2
+ProxyType=Internet
+URL=https\://my500047.c4c.saphybriscloud.cn
+User=sapbruce
