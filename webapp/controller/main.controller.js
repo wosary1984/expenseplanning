@@ -5,6 +5,12 @@ sap.ui.define([
 	"use strict";
 
 	return BaseController.extend("com.sap.expenseplanning.controller.main", {
+		c4c_MY323481_basic_destination: "C4C-MY323481-BASIC",
+		c4c_MY323481_destination: "C4C-MY323481",
+		c4c_my500047_destination: "c4c-my500047",
+		c4c_my500047_basic_destination: "C4C-my500047-BASIC",
+		c4c_service_destination: "SAP_CLOUD_EXT_SERVICE",
+		c4c_relative_path: "/sap/c4c/odata/cust/v1/c4cext/",
 		initFunction: function() {
 			var doneCallback = function(data) {
 				var oModel = new sap.ui.model.json.JSONModel();
@@ -35,6 +41,10 @@ sap.ui.define([
 
 		handleCreate: function(oEvent) {
 			var oCreateDialog = this._getDialog();
+
+			// set create dialog model
+			this._setCreateModel(oCreateDialog);
+
 			oCreateDialog.open();
 		},
 
@@ -48,6 +58,14 @@ sap.ui.define([
 			this.initFunction();
 		},
 
+		_setCreateModel(dialog) {
+
+			var dialogModelPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/new_plan_template.json");
+			var dialogModel = new sap.ui.model.json.JSONModel();
+			dialogModel.loadData(dialogModelPath, null, false);
+			dialog.setModel(dialogModel);
+		},
+
 		_getDialog: function() {
 			if (this.oCreateDialog) {
 				return this.oCreateDialog;
@@ -57,9 +75,9 @@ sap.ui.define([
 			this.oCreateDialog = sap.ui.xmlfragment("com.sap.expenseplanning.view.wizard", this);
 			this.getView().addDependent(this.oCreateDialog);
 
-			this.getView().setModel(new sap.ui.model.resource.ResourceModel({
+			/*this.getView().setModel(new sap.ui.model.resource.ResourceModel({
 				bundleName: "com.sap.expenseplanning.i18n.i18n"
-			}), "i18n");
+			}), "i18n");*/
 
 			// toggle compact style
 			jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this.oCreateDialog);
@@ -75,8 +93,8 @@ sap.ui.define([
 
 		handleDlgAfterClose: function() {
 			if (this.oCreateDialog) {
-				this.oCreateDialog.destroy();
-				this.oCreateDialog = null;
+				//this.oCreateDialog.destroy();
+				//this.oCreateDialog = null;
 			}
 		},
 
