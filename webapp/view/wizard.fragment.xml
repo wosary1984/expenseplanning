@@ -52,7 +52,7 @@
 												<l:BlockLayoutCell width="3" title="Selected Dimension">
 													<List items="{path:'selected_dimension>/DimensionCollection', sorter:{path:'key'}}">
 														<items>
-															<StandardListItem title="{Name}" value="{level}"></StandardListItem>
+															<StandardListItem title="{Name}" counter="{level}"></StandardListItem>
 														</items>
 														<headerToolbar>
 															<Toolbar>
@@ -69,6 +69,18 @@
 								</WizardStep>
 								<WizardStep id="SetDemensionInfoStep" validated="true" activate="optionalStepActivation" title="Plan Detail">
 									<MessageStrip text="Elaboration" showIcon="true"/>
+									<Tree id="Tree" items="{path: 'tree>/'}">
+										<items>
+											<StandardTreeItem title="{tree>text}" icon="{tree>ref}"/>
+										</items>
+										<headerToolbar>
+											<Toolbar>
+												<ToolbarSpacer/>
+												<Button icon="sap-icon://add" press="handleButtonPress"/>
+												<Button icon="sap-icon://decline" press="handleButtonPress"/>
+											</Toolbar>
+										</headerToolbar>
+									</Tree>
 								</WizardStep>
 								<WizardStep id="SetPlaningAmount" activate="pricingActivate" complete="pricingComplete" validated="true" title="Pricing">
 									<MessageStrip text="step4" showIcon="true"/>

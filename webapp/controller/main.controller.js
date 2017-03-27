@@ -5,7 +5,7 @@ sap.ui.define([
 	"use strict";
 
 	return BaseController.extend("com.sap.expenseplanning.controller.main", {
-		c4c_MY323481_basic_destination: "C4C-MY323481-BASIC",
+		c4c_my323481_basic_destination: "C4C-MY323481-BASIC",
 		c4c_MY323481_destination: "C4C-MY323481",
 		c4c_my500047_destination: "c4c-my500047",
 		c4c_my500047_basic_destination: "C4C-my500047-BASIC",
@@ -57,7 +57,7 @@ sap.ui.define([
 		onInit: function(evt) {
 			this.initFunction();
 		},
-		_setCreateModel(dialog) {
+		_setCreateModel: function(dialog) {
 			var dialogModelPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/new_plan_template.json");
 			var dialogModel = new sap.ui.model.json.JSONModel();
 			dialogModel.loadData(dialogModelPath, null, false);
@@ -74,6 +74,11 @@ sap.ui.define([
 			var selectedDimensionModel = new sap.ui.model.json.JSONModel();
 			selectedDimensionModel.loadData(selectedDimensionModelPath, null, false);
 			dialog.setModel(selectedDimensionModel, "selected_dimension");
+			//
+			var treeModelPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/tree_sample.json");
+			var treeModel = new sap.ui.model.json.JSONModel();
+			treeModel.loadData(treeModelPath, null, false);
+			dialog.setModel(treeModel, "tree");
 		},
 
 		_getDialog: function() {
