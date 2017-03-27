@@ -57,13 +57,23 @@ sap.ui.define([
 		onInit: function(evt) {
 			this.initFunction();
 		},
-
 		_setCreateModel(dialog) {
-
 			var dialogModelPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/new_plan_template.json");
 			var dialogModel = new sap.ui.model.json.JSONModel();
 			dialogModel.loadData(dialogModelPath, null, false);
 			dialog.setModel(dialogModel);
+
+			//
+			var dimensionModelPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/dimension_sample.json");
+			var dimensionModel = new sap.ui.model.json.JSONModel();
+			dimensionModel.loadData(dimensionModelPath, null, false);
+			dialog.setModel(dimensionModel, "dimension");
+
+			//
+			var selectedDimensionModelPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/selected_dimension_template.json");
+			var selectedDimensionModel = new sap.ui.model.json.JSONModel();
+			selectedDimensionModel.loadData(selectedDimensionModelPath, null, false);
+			dialog.setModel(selectedDimensionModel, "selected_dimension");
 		},
 
 		_getDialog: function() {

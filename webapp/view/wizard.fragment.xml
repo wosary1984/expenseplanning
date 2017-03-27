@@ -36,57 +36,39 @@
 									<l:VerticalLayout id="containerLayout" width="100%">
 										<l:BlockLayout id="BlockLayout" background="{/selectedBackground}">
 											<l:BlockLayoutRow>
-												<l:BlockLayoutCell width="2">
-													<List binding="{/SupplierCollection/0}" headerText="Available Items">
-														<CustomListItem>
-															<HBox>
-																<core:Icon size="2rem" src="sap-icon://attachment-photo"/>
-																<VBox class="sapUiSmallMarginBegin sapUiSmallMarginTopBottom">
-																	<Link text="Name" target="ProductPicUrl" press="handlePress"/>
-																	<Label text="ProductId"/>
-																</VBox>
-															</HBox>
-														</CustomListItem>
-														<CustomListItem>
-															<HBox>
-																<core:Icon size="2rem" src="sap-icon://attachment-photo"/>
-																<VBox class="sapUiSmallMarginBegin sapUiSmallMarginTopBottom">
-																	<Link text="Name" target="ProductPicUrl" press="handlePress"/>
-																	<Label text="ProductId"/>
-																</VBox>
-															</HBox>
-														</CustomListItem>
-													</List>
+												<l:BlockLayoutCell width="3" title="Available Dimension">
+													<SelectList items="{path:'dimension>/DimensionCollection', sorter:{path:'key'}}">
+														<core:Item key="{dimension>key}" text="{dimension>value}"></core:Item>
+													</SelectList>
 												</l:BlockLayoutCell>
-												<l:BlockLayoutCell width="1"></l:BlockLayoutCell>
-												<l:BlockLayoutCell width="2">
-													<List binding="{/SupplierCollection/0}" headerText="Selected Items">
-														<CustomListItem>
-															<HBox>
-																<core:Icon size="2rem" src="sap-icon://attachment-photo"/>
-																<VBox class="sapUiSmallMarginBegin sapUiSmallMarginTopBottom">
-																	<Link text="Name" target="ProductPicUrl" press="handlePress"/>
-																	<Label text="ProductId"/>
-																</VBox>
-															</HBox>
-														</CustomListItem>
-														<CustomListItem>
-															<HBox>
-																<core:Icon size="2rem" src="sap-icon://attachment-photo"/>
-																<VBox class="sapUiSmallMarginBegin sapUiSmallMarginTopBottom">
-																	<Link text="Name" target="ProductPicUrl" press="handlePress"/>
-																	<Label text="ProductId"/>
-																</VBox>
-															</HBox>
-														</CustomListItem>
+												<l:BlockLayoutCell width="1">
+													<FlexBox height="100%" direction="Column" alignItems="Start" justifyContent="Center">
+														<items>
+															<Button icon="sap-icon://open-command-field" press="onPress" ariaLabelledBy="editButtonLabel"/>
+															<Button icon="sap-icon://close-command-field" press="onPress" ariaLabelledBy="editButtonLabel"/>
+														</items>
+													</FlexBox>
+												</l:BlockLayoutCell>
+												<l:BlockLayoutCell width="3" title="Selected Dimension">
+													<List items="{path:'selected_dimension>/DimensionCollection', sorter:{path:'key'}}">
+														<items>
+															<StandardListItem title="{Name}" value="{level}"></StandardListItem>
+														</items>
+														<headerToolbar>
+															<Toolbar>
+																<ToolbarSpacer/>
+																<Button icon="sap-icon://up" press="handleButtonPress"/>
+																<Button icon="sap-icon://down" press="handleButtonPress"/>
+															</Toolbar>
+														</headerToolbar>
 													</List>
 												</l:BlockLayoutCell>
 											</l:BlockLayoutRow>
 										</l:BlockLayout>
 									</l:VerticalLayout>
 								</WizardStep>
-								<WizardStep id="SetDemensionInfoStep" validated="true" activate="optionalStepActivation" title="Optional Information">
-									<MessageStrip text="step3" showIcon="true"/>
+								<WizardStep id="SetDemensionInfoStep" validated="true" activate="optionalStepActivation" title="Plan Detail">
+									<MessageStrip text="Elaboration" showIcon="true"/>
 								</WizardStep>
 								<WizardStep id="SetPlaningAmount" activate="pricingActivate" complete="pricingComplete" validated="true" title="Pricing">
 									<MessageStrip text="step4" showIcon="true"/>

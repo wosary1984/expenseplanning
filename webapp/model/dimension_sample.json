@@ -1,0 +1,23 @@
+{
+	"DimensionCollection": [{
+		"key": "Area",
+		"value": "Area",
+		"visible": true
+	}, {
+		"key": "City",
+		"value": "City",
+		"visible": true
+	}, {
+		"key": "Product",
+		"value": "Product",
+		"visible": true
+	}, {
+		"key": "Channel",
+		"value": "Channel",
+		"visible": true
+	}, {
+		"key": "Quarter",
+		"value": "Quarter",
+		"visible": true
+	}]
+}
