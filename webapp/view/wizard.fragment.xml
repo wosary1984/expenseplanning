@@ -57,7 +57,7 @@
 								<!--Indicates whether or not the step is validated. When a step is validated a Next button is visualized in the Wizard control.-->
 								<WizardStep id="SetDimensionStep" validated="false" title="Set Dimension" activate="setDimensionActivate">
 									<MessageStrip text="设置维度结构 " showIcon="true"/>
-									<l:VerticalLayout width="100%">
+									<l:VerticalLayout width="100%"> 
 										<l:BlockLayout background="{/selectedBackground}">
 											<l:BlockLayoutRow >
 												<l:BlockLayoutCell width="1" title="Available Dimension">
