@@ -5,18 +5,34 @@
 				<pages>
 					<Page id="wizardContentPage" showHeader="false">
 						<content>
-							<Wizard id="CreateExpensePlanWizard" showNextButton="true" complete="wizardCompletedHandler">
-								<WizardStep id="BasicStep" title="Set Basic Information" validated="true">
+							<Wizard id="CreateExpensePlanWizard" showNextButton="false" complete="basicStepComplete">
+								<WizardStep binding="{/}" id="BasicStep" title="Set Basic Information" validated="true">
 									<MessageStrip text="预算计划 – 基本信息" showIcon="true"/>
-									<form:SimpleForm editable="true">
+									<form:SimpleForm id="basicStepForm" editable="true">
 										<Label text="Plan Id" required="true"/>
-										<Input value="{/PlanId}"/>
+										<Input value="{/PlanId}">
+											<customData>
+												<core:CustomData key="validation" value="NOT_NULL"/>
+											</customData>
+										</Input>
 										<Label text="Start Date" required="true"/>
-										<DatePicker value="{/StartDate}" change="t"/>
+										<DatePicker value="{/StartDate}" change="t">
+											<customData>
+												<core:CustomData key="validation" value="NOT_NULL"/>
+											</customData>
+										</DatePicker>
 										<Label text="End Date" required="true"/>
-										<DatePicker value="{/EndDate}" change="t"/>
-										<Label text="Plan Name"/>
-										<Input value="{/PlanName}"/>
+										<DatePicker value="{/EndDate}" change="t">
+											<customData>
+												<core:CustomData key="validation" value="NOT_NULL"/>
+											</customData>
+										</DatePicker>
+										<Label text="Plan Name" required="true"/>
+										<Input value="{/PlanName}">
+											<customData>
+												<core:CustomData key="validation" value="NOT_NULL"/>
+											</customData>
+										</Input>
 										<!---->
 										<Label text="Company"/>
 										<Input value="{/Company}"/>
@@ -25,32 +41,48 @@
 										<Label text="Manager"/>
 										<Input value="{/Manager}"/>
 										<Label text="Plan Amount" required="true"/>
-										<Input value="{/PlanAmount}"/>
+										<Input value="{/PlanAmount}" required="true">
+											<customData>
+												<core:CustomData key="validation" value="NOT_NULL"/>
+											</customData>
+										</Input>
 										<Label text="Plan Amount Currency" required="true"/>
-										<Input value="{/PlanAmountCurrency}"/>
+										<Input value="{/PlanAmountCurrency}">
+											<customData>
+												<core:CustomData key="validation" value="NOT_NULL"/>
+											</customData>
+										</Input>
 									</form:SimpleForm>
 								</WizardStep>
 								<!--Indicates whether or not the step is validated. When a step is validated a Next button is visualized in the Wizard control.-->
-								<WizardStep id="DimensionStep" validated="false" title="Set Dimension" activate="dimensionValidation">
+								<WizardStep id="SetDimensionStep" validated="false" title="Set Dimension" activate="setDimensionActivate">
 									<MessageStrip text="设置维度结构 " showIcon="true"/>
-									<l:VerticalLayout id="containerLayout" width="100%">
-										<l:BlockLayout id="BlockLayout" background="{/selectedBackground}">
-											<l:BlockLayoutRow>
-												<l:BlockLayoutCell width="3" title="Available Dimension">
-													<SelectList items="{path:'dimension>/DimensionCollection', sorter:{path:'key'}}">
-														<core:Item key="{dimension>key}" text="{dimension>value}"></core:Item>
-													</SelectList>
-												</l:BlockLayoutCell>
-												<l:BlockLayoutCell width="1">
-													<FlexBox height="100%" direction="Column" alignItems="Start" justifyContent="Center">
+									<l:VerticalLayout width="100%">
+										<l:BlockLayout background="{/selectedBackground}">
+											<l:BlockLayoutRow >
+												<l:BlockLayoutCell width="1" title="Available Dimension">
+													<FlexBox>
 														<items>
-															<Button icon="sap-icon://open-command-field" press="onPress" ariaLabelledBy="editButtonLabel"/>
-															<Button icon="sap-icon://close-command-field" press="onPress" ariaLabelledBy="editButtonLabel"/>
+															<SelectList id="IdAvaiableDimensions" width="75%" items="{path:'dimension>/DimensionCollection', sorter:{path:'key'}}">
+																<core:Item key="{dimension>key}" text="{dimension>value}"></core:Item>
+																<layoutData>
+																	<FlexItemData growFactor="10"/>
+																</layoutData>
+															</SelectList>
+															<FlexBox height="25%" direction="Column" alignItems="Center" justifyContent="Center">
+																<items>
+																	<Button icon="sap-icon://open-command-field" press="onAddDimension" ariaLabelledBy="editButtonLabel"/>
+																	<Button icon="sap-icon://close-command-field" press="onRemoveDimension" ariaLabelledBy="editButtonLabel"/>
+																</items>
+																<layoutData>
+																	<FlexItemData growFactor="2"/>
+																</layoutData>
+															</FlexBox>
 														</items>
 													</FlexBox>
 												</l:BlockLayoutCell>
-												<l:BlockLayoutCell width="3" title="Selected Dimension">
-													<List items="{path:'selected_dimension>/DimensionCollection', sorter:{path:'key'}}">
+												<l:BlockLayoutCell width="1" title="Selected Dimension">
+													<List id="idTargetDimensions" items="{path:'selected_dimension>/DimensionCollection', sorter:{path:'key'}}">
 														<items>
 															<StandardListItem title="{Name}" counter="{level}"></StandardListItem>
 														</items>
@@ -67,7 +99,7 @@
 										</l:BlockLayout>
 									</l:VerticalLayout>
 								</WizardStep>
-								<WizardStep id="SetDemensionInfoStep" validated="true" activate="optionalStepActivation" title="Plan Detail">
+								<WizardStep id="SetDetailStep" validated="false" activate="optionalStepActivation" title="Plan Detail">
 									<MessageStrip text="Elaboration" showIcon="true"/>
 									<Tree id="Tree" items="{path: 'tree>/'}">
 										<items>
@@ -81,9 +113,6 @@
 											</Toolbar>
 										</headerToolbar>
 									</Tree>
-								</WizardStep>
-								<WizardStep id="SetPlaningAmount" activate="pricingActivate" complete="pricingComplete" validated="true" title="Pricing">
-									<MessageStrip text="step4" showIcon="true"/>
 								</WizardStep>
 							</Wizard>
 						</content>

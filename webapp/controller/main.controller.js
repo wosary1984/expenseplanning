@@ -11,6 +11,7 @@ sap.ui.define([
 		c4c_my500047_basic_destination: "C4C-my500047-BASIC",
 		c4c_service_destination: "SAP_CLOUD_EXT_SERVICE",
 		c4c_relative_path: "/sap/c4c/odata/cust/v1/c4cext/",
+
 		initFunction: function() {
 			var doneCallback = function(data) {
 				var oModel = new sap.ui.model.json.JSONModel();
@@ -46,17 +47,30 @@ sap.ui.define([
 			this._setCreateModel(oCreateDialog);
 
 			oCreateDialog.open();
+
+			var oWizard = sap.ui.getCore().byId("CreateExpensePlanWizard");
+			if (oWizard) {
+				var oStep = sap.ui.getCore().byId("BasicStep");
+				oWizard.discardProgress(oStep);
+			}
 		},
 
-		handleDlgNext: function(oEvent) {
-			var oWizard = sap.ui.getCore().byId("CreateExpensePlanWizard");
-			if (oWizard)
-				oWizard.nextStep();
+		onAddDimension: function(oEvent) {
+			var oSourceList = sap.ui.getCore().byId("idAvaiableDimensions");
+			var oTargetList = sap.ui.getCore().byId("idTargetDimensions");
+			if(oSourceList){
+				var item = oSourceList.getSelectedItem();
+			}
+		},
+
+		onRemoveDimension: function(oEvent) {
+
 		},
 
 		onInit: function(evt) {
 			this.initFunction();
 		},
+
 		_setCreateModel: function(dialog) {
 			var dialogModelPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/new_plan_template.json");
 			var dialogModel = new sap.ui.model.json.JSONModel();
@@ -113,15 +127,60 @@ sap.ui.define([
 			}
 		},
 
+		handleDlgNext: function(oEvent) {
+			var oWizard = sap.ui.getCore().byId("CreateExpensePlanWizard");
+			if (oWizard) {
+				var iProgress = oWizard.getProgress();
+				window.console.log(iProgress);
+				if (iProgress === 1) {
+					if (this._basicStepValidation()) {
+						oWizard.nextStep();
+					}
+				}
+
+			}
+		},
+
+		_basicStepValidation: function() {
+			var result = true;
+			var oForm = sap.ui.getCore().byId("basicStepForm");
+			if (oForm) {
+				var oContents = oForm.getContent();
+
+				for (var x in oContents) {
+					var data = oContents[x].getCustomData();
+					if (data && data.length === 1) {
+						if (data[0].getValue("validation") === "NOT_NULL") {
+							var path = oContents[x].getBindingPath("value");
+							var value = oContents[x].getBindingContext().getModel().getProperty(path);
+
+							if (value === "") {
+								oContents[x].setValueState("Error");
+								result = false;
+							} else {
+								oContents[x].setValueState("None");
+							}
+							//object = oContents[x].getBindingContext().getObject();
+						}
+					}
+				}
+			}
+			return result;
+		},
+
+		setDimensionActivate: function(oEvent) {
+			window.console.log("setDimensionActivate called");
+			var oWizard = sap.ui.getCore().byId("CreateExpensePlanWizard");
+			if (oWizard) {
+				var oSource = oEvent.getSource();
+				oWizard.validateStep(oSource);
+			}
+
+		},
+
 		basicInfoValidation: function(oEvent) {
 			var oWizard = sap.ui.getCore().byId("CreateExpensePlanWizard");
 			oWizard.validateStep(sap.ui.getCore().byId("BasicStep"));
-		},
-
-		dimensionValidation: function(oEvent) {
-			var oWizard = sap.ui.getCore().byId("CreateExpensePlanWizard");
-			if (oWizard)
-				oWizard.validateStep(sap.ui.getCore().byId("DimensionStep"));
 		}
 
 	});
