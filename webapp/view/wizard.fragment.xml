@@ -63,7 +63,7 @@
 												<l:BlockLayoutCell width="1" title="Available Dimension">
 													<FlexBox>
 														<items>
-															<SelectList id="IdAvaiableDimensions" width="75%" items="{path:'dimension>/DimensionCollection', sorter:{path:'key'}}">
+															<SelectList id="idAvaiableDimensions" width="75%" items="{path:'dimension>/DimensionCollection', sorter:{path:'key'}}">
 																<core:Item key="{dimension>key}" text="{dimension>value}"></core:Item>
 																<layoutData>
 																	<FlexItemData growFactor="10"/>
@@ -82,9 +82,9 @@
 													</FlexBox>
 												</l:BlockLayoutCell>
 												<l:BlockLayoutCell width="1" title="Selected Dimension">
-													<List id="idTargetDimensions" items="{path:'selected_dimension>/DimensionCollection', sorter:{path:'key'}}">
+													<List id="idTargetDimensions" items="{path:'selected_dimension>/DimensionCollection', sorter:{path:'level'}}">
 														<items>
-															<StandardListItem title="{Name}" counter="{level}"></StandardListItem>
+															<StandardListItem title="{selected_dimension>name}" counter="{selected_dimension>level}"></StandardListItem>
 														</items>
 														<headerToolbar>
 															<Toolbar>
