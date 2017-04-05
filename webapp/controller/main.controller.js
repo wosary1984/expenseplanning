@@ -84,13 +84,12 @@ sap.ui.define([
 					oData.DimensionCollection.splice(temp[temp.length -1],1)
 					oSourceList.getModel("dimension").setData(oData);
 					
-					var oTargetData= oTargetList.getModel("selected_dimension").getData();
+					var oTargetData= oTargetList.getModel().getData();
 					var length = oTargetData.DimensionCollection.length;
 					oTargetData.DimensionCollection.push({
-						name:object.key,
-						level: length +1
+						name:object.key
 					}); 
-					oTargetList.getModel("selected_dimension").setData(oTargetData);
+					oTargetList.getModel().setData(oTargetData);
 					
 					this._discardToSecondStep();
 					
@@ -99,7 +98,96 @@ sap.ui.define([
 		},
 
 		onRemoveDimension: function(oEvent) {
-
+			var oSourceList = sap.ui.getCore().byId("idTargetDimensions");
+			var oTargetList = sap.ui.getCore().byId("idAvaiableDimensions");
+			if(oSourceList){
+				var oItem = oSourceList.getSelectedItem();
+				
+				if(oItem){
+					var path = oItem.getBindingContext().getPath();
+					var object = oItem.getBindingContext().getObject();
+					
+					var oData= oSourceList.getModel().getData();
+					var temp = path.split("/");
+					oData.DimensionCollection.splice(temp[temp.length -1],1)
+					oSourceList.getModel().setData(oData);
+					
+					var oTargetData= oTargetList.getModel("dimension").getData();
+					var length = oTargetData.DimensionCollection.length;
+					oTargetData.DimensionCollection.push({
+						key:object.name,
+						value: object.name
+					}); 
+					oTargetList.getModel("dimension").setData(oTargetData);
+					
+					this._discardToSecondStep();
+					
+				}
+			}
+		},
+		
+		onUpDimension:function(oEvent){
+			var oSourceList = sap.ui.getCore().byId("idTargetDimensions");
+			if(oSourceList){
+				var oItem = oSourceList.getSelectedItem();
+				
+				if(oItem){
+					
+					var swapItems = function(arr,index1,index2){
+						arr[index1] = arr.splice(index2,1,arr[index1])[0]
+						return arr;
+					}
+					var path = oItem.getBindingContext().getPath();
+					var object = oItem.getBindingContext().getObject();
+					
+					var oData= oSourceList.getModel().getData();
+					
+					var index = oSourceList.indexOfItem(oItem);
+					
+					 if(index == 0) {
+				            return;
+				        }
+				     var x = swapItems(oData.DimensionCollection, index, index - 1);
+					
+					oSourceList.getModel().setData(oData);
+					//oSourceList.removeSelections(true);
+								
+					this._discardToSecondStep();
+					
+				}
+			}
+		},
+		
+		onDownDimension:function(oEvent){
+			var oSourceList = sap.ui.getCore().byId("idTargetDimensions");
+			if(oSourceList){
+				var oItem = oSourceList.getSelectedItem();
+				
+				if(oItem){
+					
+					var swapItems = function(arr,index1,index2){
+						arr[index1] = arr.splice(index2,1,arr[index1])[0]
+						return arr;
+					}
+					var path = oItem.getBindingContext().getPath();
+					var object = oItem.getBindingContext().getObject();
+					
+					var oData= oSourceList.getModel().getData();
+					
+					var index = oSourceList.indexOfItem(oItem);
+					
+					 if(index === oData.DimensionCollection.length) {
+				            return;
+				        }
+				     var x = swapItems(oData.DimensionCollection, index, index + 1);
+					
+					oSourceList.getModel().setData(oData);
+					//oSourceList.removeSelections(true);
+								
+					this._discardToSecondStep();
+					
+				}
+			}
 		},
 
 		onInit: function(evt) {
@@ -167,12 +255,26 @@ sap.ui.define([
 			if (oWizard) {
 				var iProgress = oWizard.getProgress();
 				window.console.log(iProgress);
-				if (iProgress === 1) {
-					if (this._basicStepValidation()) {
-						oWizard.nextStep();
-					}
+				
+				if (iProgress === 1 && this._basicStepValidation()) {
+					oWizard.nextStep();
+				}
+				else if(iProgress === 2 && this._selectDimensionValidation()){
+					oWizard.nextStep();
+				}
+				else if(iProgress === 3){
+					oWizard.nextStep();
 				}
 
+			}
+		},
+		
+		_selectDimensionValidation:function(){
+			var oSourceList = sap.ui.getCore().byId("idTargetDimensions");
+			if(oSourceList && oSourceList.getItems().length> 0){
+				return true;
+			}else{
+				return false;
 			}
 		},
 
