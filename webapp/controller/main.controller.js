@@ -47,21 +47,21 @@ sap.ui.define([
 			this._setCreateModel(oCreateDialog);
 
 			oCreateDialog.open();
-			
+
 			this._discardToFirstStep();
-			
+
 		},
-		
-		_discardToFirstStep:function(){
+
+		_discardToFirstStep: function() {
 			var oWizard = sap.ui.getCore().byId("CreateExpensePlanWizard");
 			if (oWizard) {
 				var oStep = sap.ui.getCore().byId("BasicStep");
 				oWizard.discardProgress(oStep);
 			}
 		},
-		
-		_discardToSecondStep:function(){
-			
+
+		_discardToSecondStep: function() {
+
 			var oWizard = sap.ui.getCore().byId("CreateExpensePlanWizard");
 			if (oWizard) {
 				var oStep = sap.ui.getCore().byId("SetDimensionStep");
@@ -72,27 +72,27 @@ sap.ui.define([
 		onAddDimension: function(oEvent) {
 			var oSourceList = sap.ui.getCore().byId("idAvaiableDimensions");
 			var oTargetList = sap.ui.getCore().byId("idTargetDimensions");
-			if(oSourceList){
+			if (oSourceList) {
 				var oItem = oSourceList.getSelectedItem();
-				
-				if(oItem){
+
+				if (oItem) {
 					var path = oItem.getBindingContext("dimension").getPath();
 					var object = oItem.getBindingContext("dimension").getObject();
-					
-					var oData= oSourceList.getModel("dimension").getData();
+
+					var oData = oSourceList.getModel("dimension").getData();
 					var temp = path.split("/");
-					oData.DimensionCollection.splice(temp[temp.length -1],1)
+					oData.DimensionCollection.splice(temp[temp.length - 1], 1);
 					oSourceList.getModel("dimension").setData(oData);
-					
-					var oTargetData= oTargetList.getModel().getData();
-					var length = oTargetData.DimensionCollection.length;
+
+					var oTargetData = oTargetList.getModel().getData();
+					//var length = oTargetData.DimensionCollection.length;
 					oTargetData.DimensionCollection.push({
-						name:object.key
-					}); 
+						name: object.key
+					});
 					oTargetList.getModel().setData(oTargetData);
-					
+
 					this._discardToSecondStep();
-					
+
 				}
 			}
 		},
@@ -100,92 +100,92 @@ sap.ui.define([
 		onRemoveDimension: function(oEvent) {
 			var oSourceList = sap.ui.getCore().byId("idTargetDimensions");
 			var oTargetList = sap.ui.getCore().byId("idAvaiableDimensions");
-			if(oSourceList){
+			if (oSourceList) {
 				var oItem = oSourceList.getSelectedItem();
-				
-				if(oItem){
+
+				if (oItem) {
 					var path = oItem.getBindingContext().getPath();
 					var object = oItem.getBindingContext().getObject();
-					
-					var oData= oSourceList.getModel().getData();
+
+					var oData = oSourceList.getModel().getData();
 					var temp = path.split("/");
-					oData.DimensionCollection.splice(temp[temp.length -1],1)
+					oData.DimensionCollection.splice(temp[temp.length - 1], 1)
 					oSourceList.getModel().setData(oData);
-					
-					var oTargetData= oTargetList.getModel("dimension").getData();
-					var length = oTargetData.DimensionCollection.length;
+
+					var oTargetData = oTargetList.getModel("dimension").getData();
+					//var length = oTargetData.DimensionCollection.length;
 					oTargetData.DimensionCollection.push({
-						key:object.name,
+						key: object.name,
 						value: object.name
-					}); 
+					});
 					oTargetList.getModel("dimension").setData(oTargetData);
-					
+
 					this._discardToSecondStep();
-					
+
 				}
 			}
 		},
-		
-		onUpDimension:function(oEvent){
+
+		onUpDimension: function(oEvent) {
 			var oSourceList = sap.ui.getCore().byId("idTargetDimensions");
-			if(oSourceList){
+			if (oSourceList) {
 				var oItem = oSourceList.getSelectedItem();
-				
-				if(oItem){
-					
-					var swapItems = function(arr,index1,index2){
-						arr[index1] = arr.splice(index2,1,arr[index1])[0]
+
+				if (oItem) {
+
+					var swapItems = function(arr, index1, index2) {
+						arr[index1] = arr.splice(index2, 1, arr[index1])[0];
 						return arr;
-					}
-					var path = oItem.getBindingContext().getPath();
-					var object = oItem.getBindingContext().getObject();
-					
-					var oData= oSourceList.getModel().getData();
-					
+					};
+					//var path = oItem.getBindingContext().getPath();
+					//var object = oItem.getBindingContext().getObject();
+
+					var oData = oSourceList.getModel().getData();
+
 					var index = oSourceList.indexOfItem(oItem);
-					
-					 if(index == 0) {
-				            return;
-				        }
-				     var x = swapItems(oData.DimensionCollection, index, index - 1);
-					
+
+					if (index === 0) {
+						return;
+					}
+					swapItems(oData.DimensionCollection, index, index - 1);
+
 					oSourceList.getModel().setData(oData);
 					//oSourceList.removeSelections(true);
-								
+
 					this._discardToSecondStep();
-					
+
 				}
 			}
 		},
-		
-		onDownDimension:function(oEvent){
+
+		onDownDimension: function(oEvent) {
 			var oSourceList = sap.ui.getCore().byId("idTargetDimensions");
-			if(oSourceList){
+			if (oSourceList) {
 				var oItem = oSourceList.getSelectedItem();
-				
-				if(oItem){
-					
-					var swapItems = function(arr,index1,index2){
-						arr[index1] = arr.splice(index2,1,arr[index1])[0]
+
+				if (oItem) {
+
+					var swapItems = function(arr, index1, index2) {
+						arr[index1] = arr.splice(index2, 1, arr[index1])[0];
 						return arr;
-					}
-					var path = oItem.getBindingContext().getPath();
-					var object = oItem.getBindingContext().getObject();
-					
-					var oData= oSourceList.getModel().getData();
-					
+					};
+					//var path = oItem.getBindingContext().getPath();
+					//var object = oItem.getBindingContext().getObject();
+
+					var oData = oSourceList.getModel().getData();
+
 					var index = oSourceList.indexOfItem(oItem);
-					
-					 if(index === oData.DimensionCollection.length) {
-				            return;
-				        }
-				     var x = swapItems(oData.DimensionCollection, index, index + 1);
-					
+
+					if (index === oData.DimensionCollection.length) {
+						return;
+					}
+					swapItems(oData.DimensionCollection, index, index + 1);
+
 					oSourceList.getModel().setData(oData);
 					//oSourceList.removeSelections(true);
-								
+
 					this._discardToSecondStep();
-					
+
 				}
 			}
 		},
@@ -227,10 +227,6 @@ sap.ui.define([
 			this.oCreateDialog = sap.ui.xmlfragment("com.sap.expenseplanning.view.wizard", this);
 			this.getView().addDependent(this.oCreateDialog);
 
-			/*this.getView().setModel(new sap.ui.model.resource.ResourceModel({
-				bundleName: "com.sap.expenseplanning.i18n.i18n"
-			}), "i18n");*/
-
 			// toggle compact style
 			jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this.oCreateDialog);
 
@@ -255,25 +251,30 @@ sap.ui.define([
 			if (oWizard) {
 				var iProgress = oWizard.getProgress();
 				window.console.log(iProgress);
-				
+
 				if (iProgress === 1 && this._basicStepValidation()) {
 					oWizard.nextStep();
-				}
-				else if(iProgress === 2 && this._selectDimensionValidation()){
+				} else if (iProgress === 2 && this._selectDimensionValidation()) {
 					oWizard.nextStep();
-				}
-				else if(iProgress === 3){
+					this._constructTreeData();
+				} else if (iProgress === 3) {
 					oWizard.nextStep();
 				}
 
 			}
 		},
-		
-		_selectDimensionValidation:function(){
+
+		_constructTreeData: function() {
+			var oModel =this._getDialog().getModel();
+			if(oModel){
+				var oData = oModel.getData();
+			}
+		},
+		_selectDimensionValidation: function() {
 			var oSourceList = sap.ui.getCore().byId("idTargetDimensions");
-			if(oSourceList && oSourceList.getItems().length> 0){
+			if (oSourceList && oSourceList.getItems().length > 0) {
 				return true;
-			}else{
+			} else {
 				return false;
 			}
 		},
