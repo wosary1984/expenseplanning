@@ -1,100 +1,114 @@
-<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout" xmlns:form="sap.ui.layout.form">
-	<Dialog title="Dialog" contentWidth="80%" contentHeight="70%" draggable="false" resizable="true" afterClose="handleDlgAfterClose">
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout" xmlns:form="sap.ui.layout.form"
+	xmlns:table="sap.ui.table" xmlns:u="sap.ui.unified">
+	<Dialog title="Dialog" binding="{/}" contentWidth="70%"
+		contentHeight="60%" draggable="false" resizable="true" afterClose="onDialogAfterClose">
 		<content>
 			<NavContainer id="wizardContainer" width="100%" height="100%">
 				<pages>
 					<Page id="wizardContentPage" showHeader="false">
 						<content>
-							<Wizard id="CreateExpensePlanWizard" showNextButton="false" complete="basicStepComplete">
-								<WizardStep binding="{/}" id="BasicStep" title="Set Basic Information" validated="true">
-									<MessageStrip text="预算计划 – 基本信息" showIcon="true"/>
+							<Wizard id="CreateExpensePlanWizard" showNextButton="false"
+								complete="basicStepComplete">
+								<WizardStep binding="{/}" id="BasicStep" title="Set Basic Information"
+									validated="true">
+									<MessageStrip text="预算计划 – 基本信息" showIcon="true" />
 									<form:SimpleForm id="basicStepForm" editable="true">
-										<Label text="Plan Id" required="true"/>
-										<Input value="{/PlanId}">
+										<Label text="Plan Id" required="true" />
+										<Input value="{/planningId}">
 											<customData>
-												<core:CustomData key="validation" value="NOT_NULL"/>
+												<core:CustomData key="validation" value="NOT_NULL" />
 											</customData>
 										</Input>
-										<Label text="Start Date" required="true"/>
-										<DatePicker value="{/StartDate}" change="t">
+										<Label text="Start Date" required="true" />
+										<DatePicker value="{/startDate}" change="t">
 											<customData>
-												<core:CustomData key="validation" value="NOT_NULL"/>
+												<core:CustomData key="validation" value="NOT_NULL" />
 											</customData>
 										</DatePicker>
-										<Label text="End Date" required="true"/>
-										<DatePicker value="{/EndDate}" change="t">
+										<Label text="End Date" required="true" />
+										<DatePicker value="{/endDate}" change="t">
 											<customData>
-												<core:CustomData key="validation" value="NOT_NULL"/>
+												<core:CustomData key="validation" value="NOT_NULL" />
 											</customData>
 										</DatePicker>
-										<Label text="Plan Name" required="true"/>
-										<Input value="{/PlanName}">
+										<Label text="Plan Name" required="true" />
+										<Input value="{/planningName}">
 											<customData>
-												<core:CustomData key="validation" value="NOT_NULL"/>
+												<core:CustomData key="validation" value="NOT_NULL" />
 											</customData>
 										</Input>
 										<!---->
-										<Label text="Company"/>
-										<Input value="{/Company}"/>
-										<Label text="Responseible Employee"/>
-										<Input value="{/Employee}"/>
-										<Label text="Manager"/>
-										<Input value="{/Manager}"/>
-										<Label text="Plan Amount" required="true"/>
-										<Input value="{/PlanAmount}" required="true">
+										<Label text="Company" />
+										<Input value="{/company}" />
+										<Label text="Responseible Employee" />
+										<Input value="{/employee}" />
+										<Label text="Manager" />
+										<Input value="{/manager}" />
+										<Label text="Plan Amount" required="true" />
+										<Input value="{/planningAmount}" required="true" type="Number">
 											<customData>
-												<core:CustomData key="validation" value="NOT_NULL"/>
+												<core:CustomData key="validation" value="NOT_NULL" />
 											</customData>
 										</Input>
-										<Label text="Plan Amount Currency" required="true"/>
-										<Input value="{/PlanAmountCurrency}">
+										<Label text="Plan Amount Currency" required="true" />
+										<Input value="{/planningAmountCurrency}">
 											<customData>
-												<core:CustomData key="validation" value="NOT_NULL"/>
+												<core:CustomData key="validation" value="NOT_NULL" />
 											</customData>
 										</Input>
 									</form:SimpleForm>
 								</WizardStep>
 								<!--Indicates whether or not the step is validated. When a step is 
 									validated a Next button is visualized in the Wizard control. -->
-								<WizardStep id="SetDimensionStep" validated="false" title="Set Dimension" activate="setDimensionActivate">
-									<MessageStrip text="设置维度结构 " showIcon="true"/>
+								<WizardStep id="SetDimensionStep" validated="false"
+									title="Set Dimension" activate="setDimensionActivate">
+									<MessageStrip text="设置维度结构 " showIcon="true" />
 									<l:VerticalLayout width="100%">
 										<l:BlockLayout background="{/selectedBackground}">
 											<l:BlockLayoutRow>
-												<l:BlockLayoutCell width="1" title="Available Dimension">
+												<l:BlockLayoutCell width="1"
+													title="Available Dimension">
 													<FlexBox>
 														<items>
-															<List id="idAvaiableDimensions" mode="SingleSelectMaster" noDataText="No Data"
+															<List id="idAvaiableDimensions" mode="SingleSelectMaster"
+																noDataText="No Data"
 																items="{path:'dimension>/DimensionCollection', sorter:{path:'key'}}">
 																<items>
 																	<StandardListItem title="{dimension>value}"></StandardListItem>
 																</items>
 																<layoutData>
-																	<FlexItemData growFactor="10"/>
+																	<FlexItemData growFactor="10" />
 																</layoutData>
 															</List>
-															<FlexBox height="25%" direction="Column" alignItems="Center" justifyContent="Center">
+															<FlexBox height="25%" direction="Column"
+																alignItems="Center" justifyContent="Center">
 																<items>
-																	<Button icon="sap-icon://open-command-field" press="onAddDimension" ariaLabelledBy="editButtonLabel"/>
-																	<Button icon="sap-icon://close-command-field" press="onRemoveDimension" ariaLabelledBy="editButtonLabel"/>
+																	<Button icon="sap-icon://open-command-field"
+																		press="onAddDimension" ariaLabelledBy="editButtonLabel" />
+																	<Button icon="sap-icon://close-command-field"
+																		press="onRemoveDimension" ariaLabelledBy="editButtonLabel" />
 																</items>
 																<layoutData>
-																	<FlexItemData growFactor="2"/>
+																	<FlexItemData growFactor="2" />
 																</layoutData>
 															</FlexBox>
 														</items>
 													</FlexBox>
 												</l:BlockLayoutCell>
-												<l:BlockLayoutCell width="1" title="Selected Dimension">
-													<List id="idTargetDimensions" mode="SingleSelectMaster" noDataText="No Data" items="{path:'/DimensionCollection'}">
+												<l:BlockLayoutCell width="1"
+													title="Selected Dimension">
+													<List id="idTargetDimensions" mode="SingleSelectMaster"
+														noDataText="No Data" items="{path:'/DimensionCollection'}">
 														<items>
-															<StandardListItem title="{name}" counter="{level}"></StandardListItem>
+															<StandardListItem title="{name}"
+																counter="{level}"></StandardListItem>
 														</items>
 														<headerToolbar>
 															<Toolbar>
-																<ToolbarSpacer/>
-																<Button icon="sap-icon://up" press="onUpDimension"/>
-																<Button icon="sap-icon://down" press="onDownDimension"/>
+																<ToolbarSpacer />
+																<Button icon="sap-icon://up" press="onUpDimension" />
+																<Button icon="sap-icon://down" press="onDownDimension" />
 															</Toolbar>
 														</headerToolbar>
 													</List>
@@ -103,31 +117,76 @@
 										</l:BlockLayout>
 									</l:VerticalLayout>
 								</WizardStep>
-								<WizardStep id="SetDetailStep" validated="false" activate="optionalStepActivation" title="Plan Detail">
-									<MessageStrip text="Elaboration" showIcon="true"/>
-									<Tree id="Tree" items="{path: '/Tree'}">
-										<items>
-											<StandardTreeItem title="{text}" icon="{ref}" counter="111.1"/>
-										</items>
-										<headerToolbar>
+								<WizardStep id="SetDetailStep" validated="false"
+									activate="optionalStepActivation" title="Planning Detail">
+									<MessageStrip text="Elaboration" showIcon="true" />
+									<table:TreeTable id="idPlanning" rows="{path:'/Tree'}"
+										selectionMode="MultiToggle" enableSelectAll="false"
+										expandFirstLevel="true" ariaLabelledBy="title" cellClick="onCellClicked">
+										<table:toolbar>
 											<Toolbar>
-												<ToolbarSpacer/>
-												<Button icon="sap-icon://add" press="handleButtonPress"/>
-												<Button icon="sap-icon://decline" press="handleButtonPress"/>
+												<ToolbarSpacer />
 											</Toolbar>
-										</headerToolbar>
-									</Tree>
+										</table:toolbar>
+										<table:columns>
+											<table:Column width="30%">
+												<Label text="Dimension" />
+												<table:template>
+													<Input value="{text}" type="Text" textFormatMode="KeyValue"
+														placeholder="Enter Dimension ..." showSuggestion="false"
+														showValueHelp="{= ${level} > 0 ? true : false }" editable="{= ${level} > 0 ? true : false }"
+														valueHelpRequest="onValueHelpPress"
+														valueState="{path:'text', formatter:'com.sap.expenseplanning.util.Formatter.valuteState'}"
+														valueStateText="Please Enter Dimension">
+														<customData>
+															<core:CustomData key="level" value="{level}" />
+														</customData>
+													</Input>
+												</table:template>
+											</table:Column>
+											<table:Column width="30%">
+												<Label text="Planning Amount" />
+												<table:template>
+													<Input value="{planningAmount}" type="Number"
+														editable="{= ${level} > 0 ? true : false }" liveChange="onPlanningAmountChange"
+														valueState="{valueState}" valueStateText="{valueStateText}" />
+												</table:template>
+											</table:Column>
+											<table:Column width="15%">
+												<Label text="Action" />
+												<table:template>
+													<Toolbar>
+														<Button icon="sap-icon://add" tooltip="Add Child {height}"
+															press="onAddChildButtonPress" enabled="{= ${level} !== ${height} ? true : false }" />
+														<Button icon="sap-icon://delete" tooltip="Remove Child"
+															press="onRemoveButtonPress" />
+													</Toolbar>
+
+												</table:template>
+											</table:Column>
+											<table:Column width="25%">
+												<Label text="Planning Amount" />
+												<table:template>
+													<u:Currency
+														value="{path:'planningAmount', formatter:'com.sap.expenseplanning.util.Formatter.str2Float'}"
+														currency="{Currency}" />
+												</table:template>
+											</table:Column>
+										</table:columns>
+									</table:TreeTable>
 								</WizardStep>
 							</Wizard>
 						</content>
+						<footer>
+							<Toolbar>
+								<ToolbarSpacer />
+								<Button id="idWizardNext" text="Next Step" press="onWizardNext"></Button>
+								<Button text="Close" press="onDialogClose"></Button>
+							</Toolbar>
+						</footer>
 					</Page>
 				</pages>
 			</NavContainer>
 		</content>
-		<buttons>
-			<Button text="Previous Step" press="handleDlgPrevious"></Button>
-			<Button text="Next Step" press="handleDlgNext"></Button>
-			<Button text="Close" press="handleDlgClose"></Button>
-		</buttons>
 	</Dialog>
 </core:FragmentDefinition>

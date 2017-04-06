@@ -1,3 +1,4 @@
+jQuery.sap.require("com.sap.expenseplanning.util.Formatter");
 sap.ui.define([
 	"com/sap/expenseplanning/controller/BaseController",
 	"com/sap/expenseplanning/util/AjaxUtil"
@@ -11,6 +12,9 @@ sap.ui.define([
 		c4c_my500047_basic_destination: "C4C-my500047-BASIC",
 		c4c_service_destination: "SAP_CLOUD_EXT_SERVICE",
 		c4c_relative_path: "/sap/c4c/odata/cust/v1/c4cext/",
+		
+		g_current_cell_context:null,
+		g_dimension_input_id:'',
 
 		initFunction: function() {
 			var doneCallback = function(data) {
@@ -47,6 +51,9 @@ sap.ui.define([
 			this._setCreateModel(oCreateDialog);
 
 			oCreateDialog.open();
+			
+			//reset global variable
+			this.g_current_cell_context = null;
 
 			this._discardToFirstStep();
 
@@ -58,6 +65,7 @@ sap.ui.define([
 				var oStep = sap.ui.getCore().byId("BasicStep");
 				oWizard.discardProgress(oStep);
 			}
+			this._setWizardNextButtonText("next");
 		},
 
 		_discardToSecondStep: function() {
@@ -67,6 +75,7 @@ sap.ui.define([
 				var oStep = sap.ui.getCore().byId("SetDimensionStep");
 				oWizard.discardProgress(oStep);
 			}
+			this._setWizardNextButtonText("next");
 		},
 
 		onAddDimension: function(oEvent) {
@@ -85,10 +94,11 @@ sap.ui.define([
 					oSourceList.getModel("dimension").setData(oData);
 
 					var oTargetData = oTargetList.getModel().getData();
-					//var length = oTargetData.DimensionCollection.length;
+					// var length = oTargetData.DimensionCollection.length;
 					oTargetData.DimensionCollection.push({
 						name: object.key
 					});
+					oTargetData.height = oTargetData.DimensionCollection.length;
 					oTargetList.getModel().setData(oTargetData);
 
 					this._discardToSecondStep();
@@ -110,10 +120,11 @@ sap.ui.define([
 					var oData = oSourceList.getModel().getData();
 					var temp = path.split("/");
 					oData.DimensionCollection.splice(temp[temp.length - 1], 1)
+					oData.height = oData.DimensionCollection.length;
 					oSourceList.getModel().setData(oData);
 
 					var oTargetData = oTargetList.getModel("dimension").getData();
-					//var length = oTargetData.DimensionCollection.length;
+					// var length = oTargetData.DimensionCollection.length;
 					oTargetData.DimensionCollection.push({
 						key: object.name,
 						value: object.name
@@ -137,8 +148,8 @@ sap.ui.define([
 						arr[index1] = arr.splice(index2, 1, arr[index1])[0];
 						return arr;
 					};
-					//var path = oItem.getBindingContext().getPath();
-					//var object = oItem.getBindingContext().getObject();
+					// var path = oItem.getBindingContext().getPath();
+					// var object = oItem.getBindingContext().getObject();
 
 					var oData = oSourceList.getModel().getData();
 
@@ -150,7 +161,7 @@ sap.ui.define([
 					swapItems(oData.DimensionCollection, index, index - 1);
 
 					oSourceList.getModel().setData(oData);
-					//oSourceList.removeSelections(true);
+					// oSourceList.removeSelections(true);
 
 					this._discardToSecondStep();
 
@@ -169,8 +180,8 @@ sap.ui.define([
 						arr[index1] = arr.splice(index2, 1, arr[index1])[0];
 						return arr;
 					};
-					//var path = oItem.getBindingContext().getPath();
-					//var object = oItem.getBindingContext().getObject();
+					// var path = oItem.getBindingContext().getPath();
+					// var object = oItem.getBindingContext().getObject();
 
 					var oData = oSourceList.getModel().getData();
 
@@ -182,7 +193,7 @@ sap.ui.define([
 					swapItems(oData.DimensionCollection, index, index + 1);
 
 					oSourceList.getModel().setData(oData);
-					//oSourceList.removeSelections(true);
+					// oSourceList.removeSelections(true);
 
 					this._discardToSecondStep();
 
@@ -192,6 +203,7 @@ sap.ui.define([
 
 		onInit: function(evt) {
 			this.initFunction();
+			
 		},
 
 		_setCreateModel: function(dialog) {
@@ -222,7 +234,6 @@ sap.ui.define([
 			if (this.oCreateDialog) {
 				return this.oCreateDialog;
 			}
-
 			// associate controller with the fragment
 			this.oCreateDialog = sap.ui.xmlfragment("com.sap.expenseplanning.view.wizard", this);
 			this.getView().addDependent(this.oCreateDialog);
@@ -233,41 +244,102 @@ sap.ui.define([
 			return this.oCreateDialog;
 		},
 
-		handleDlgClose: function() {
+		onDialogClose: function() {
 			if (this.oCreateDialog) {
 				return this.oCreateDialog.close();
 			}
 		},
 
-		handleDlgAfterClose: function() {
+		onDialogAfterClose: function() {
 			if (this.oCreateDialog) {
-				//this.oCreateDialog.destroy();
-				//this.oCreateDialog = null;
+				// this.oCreateDialog.destroy();
+				// this.oCreateDialog = null;
 			}
 		},
 
-		handleDlgNext: function(oEvent) {
+		onWizardNext: function(oEvent) {
 			var oWizard = sap.ui.getCore().byId("CreateExpensePlanWizard");
 			if (oWizard) {
 				var iProgress = oWizard.getProgress();
-				window.console.log(iProgress);
+				//window.console.log(iProgress);
 
 				if (iProgress === 1 && this._basicStepValidation()) {
 					oWizard.nextStep();
 				} else if (iProgress === 2 && this._selectDimensionValidation()) {
 					oWizard.nextStep();
 					this._constructTreeData();
+					
+					// change next button text to preview
+					this._setWizardNextButtonText("preview");
+					
 				} else if (iProgress === 3) {
-					oWizard.nextStep();
+					if(this._thirdStepValidation()){
+						var oNavContainer = sap.ui.getCore().byId("wizardContainer");
+						oNavContainer.to(this._getReviewPage());
+					}else{
+						
+					}
 				}
 
 			}
+		},
+		
+		_getReviewPage:function(){
+			if (this._oWizardReviewPage) {
+				return this._oWizardReviewPage;
+			}
+			this._oWizardReviewPage = sap.ui.xmlfragment("com.sap.expenseplanning.view.review", this);
+			var oNavContainer = sap.ui.getCore().byId("wizardContainer");
+			oNavContainer.addPage(this._oWizardReviewPage);
+			return this._oWizardReviewPage;
+		},
+		
+		_thirdStepValidation:function(){
+			var result = true;
+			var oData = this._getDialog().getModel().getData();
+			var validateNode=function(node){
+				var result = true;
+				if(node.valueState != "None" || node.text =="")
+					return false;
+				else {
+					for(var x in node.nodes){
+						result= validateNode(node.nodes[x]);	
+						if(!result)
+							break;
+					}
+				}
+				return result;
+			}
+			if(oData){
+				result = validateNode(oData.Tree[0]);
+			}
+			return result;
+		},
+		
+		_setWizardNextButtonText:function(text){
+			var oButton = sap.ui.getCore().byId("idWizardNext");
+			var oBundle = this.getView().getModel("i18n").getResourceBundle();
+			oButton.setText(oBundle.getText(text));
 		},
 
 		_constructTreeData: function() {
 			var oModel =this._getDialog().getModel();
 			if(oModel){
 				var oData = oModel.getData();
+				
+				var oTreeData = {};
+						
+				oTreeData.text = oData.planningName;
+				oTreeData.planningAmount = Number(oData.planningAmount) ;
+				oTreeData.planningAmount = Number(oData.planningAmount) ;
+				oTreeData.Currency = oData.planningAmountCurrency;
+				oTreeData.level = 0;
+				oTreeData.height = oData.height;
+				oTreeData.valueState="None";
+				oTreeData.valueStateText="";
+				oData.Tree[0]=  oTreeData;
+				
+				this._getDialog().getModel().setData(oData);
 			}
 		},
 		_selectDimensionValidation: function() {
@@ -286,28 +358,32 @@ sap.ui.define([
 				var oContents = oForm.getContent();
 
 				for (var x in oContents) {
-					var data = oContents[x].getCustomData();
-					if (data && data.length === 1) {
-						if (data[0].getValue("validation") === "NOT_NULL") {
-							var path = oContents[x].getBindingPath("value");
-							var value = oContents[x].getBindingContext().getModel().getProperty(path);
-
-							if (value === "") {
-								oContents[x].setValueState("Error");
-								result = false;
-							} else {
-								oContents[x].setValueState("None");
+					var oCustData = oContents[x].getCustomData();
+						for(var m in oCustData){
+							if(oCustData[m].getKey() ==="validation"){
+								if (oCustData[0].getValue() === "NOT_NULL") {
+									var path = oContents[x].getBindingPath("value");
+									var value = oContents[x].getBindingContext().getModel().getProperty(path);
+	
+									if (value === "") {
+										oContents[x].setValueState("Error");
+										result = false;
+									} else {
+										oContents[x].setValueState("None");
+									}
+									// object =
+									// oContents[x].getBindingContext().getObject();
+								}
+								break;
 							}
-							//object = oContents[x].getBindingContext().getObject();
 						}
 					}
 				}
-			}
 			return result;
 		},
 
 		setDimensionActivate: function(oEvent) {
-			window.console.log("setDimensionActivate called");
+			//window.console.log("setDimensionActivate called");
 			var oWizard = sap.ui.getCore().byId("CreateExpensePlanWizard");
 			if (oWizard) {
 				var oSource = oEvent.getSource();
@@ -319,7 +395,148 @@ sap.ui.define([
 		basicInfoValidation: function(oEvent) {
 			var oWizard = sap.ui.getCore().byId("CreateExpensePlanWizard");
 			oWizard.validateStep(sap.ui.getCore().byId("BasicStep"));
+		},
+		
+		onAddChildButtonPress:function(oEvent){
+			if(this.g_current_cell_context){
+				var sPath = this.g_current_cell_context.getPath();
+				var object = this.g_current_cell_context.getModel().getObject(sPath); 
+				var child = {};
+				child.planningAmount =0;
+				child.parentAmount = object.planningAmount;
+				child.text="";
+				child.Currency = "CNY";
+				child.level = object.level +1;
+				child.height = object.height;
+				child.valueState="Error";
+				child.valueStateText="Enter Planning Amount";
+				if(!object.nodes){
+					object.nodes = [];
+				}
+				object.nodes.push(child);
+				this.g_current_cell_context.getModel().updateBindings();
+			}
+		},
+		
+		onCellClicked:function(oEvent){
+			var context = oEvent.getParameter("rowBindingContext");
+			this.g_current_cell_context = context;
+		},
+		
+		onValueHelpPress:function(oEvent){
+			
+			this.g_dimension_input_id = oEvent.getSource().getId();
+			
+			var oSource = oEvent.getSource();
+			var oCustData = oSource.getCustomData();
+			var level = 0;
+			for(var x in oCustData){
+				if(oCustData[x].getKey()==="level"){
+					level = oCustData[x].getValue();
+					break;
+				}
+			}
+			
+			if(level !== 0){
+				var oData = this._getDialog().getModel().getData();
+				var dimension = oData.DimensionCollection[level-1];
+				
+				var oModel = this._createDataModel(dimension);
+				
+				if(oModel){
+					
+					if(!this._oValueHelpDialog){
+						this._oValueHelpDialog = sap.ui.xmlfragment("com.sap.expenseplanning.view.valueHelp", this);
+					}
+					this._oValueHelpDialog.setModel(oModel);
+					oModel.updateBindings();
+					// clear the old search filter
+					this._oValueHelpDialog.getBinding("items").filter([]);
+					
+					// toggle compact style
+					jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this._oValueHelpDialog);
+					this._oValueHelpDialog.open();
+				}
+			}
+		},
+		
+		_createDataModel: function(dimension) {
+			if(dimension.name==="Area" || dimension.name==="City"){
+				var sModelPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/city_sample.json");
+				var oModel = new sap.ui.model.json.JSONModel();
+				oModel.loadData(sModelPath, null, false);
+				return oModel;
+			}
+			else if(dimension.name==="Product" ){
+				var sModelPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/product_sample.json");
+				var oModel = new sap.ui.model.json.JSONModel();
+				oModel.loadData(sModelPath, null, false);
+				return oModel;
+			}
+			if(dimension.name==="Channel" ){
+				var sModelPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/channel_sample.json");
+				var oModel = new sap.ui.model.json.JSONModel();
+				oModel.loadData(sModelPath, null, false);
+				return oModel;
+			}
+		},
+		
+		onSelectSearch:function(oEvent){
+			var sValue = oEvent.getParameter("value");
+			var oFilter = new sap.ui.model.Filter("value", sap.ui.model.FilterOperator.Contains, sValue);
+			var oBinding = oEvent.getSource().getBinding("items");
+			oBinding.filter([oFilter]);
+		},
+		
+		onSelectClose:function(oEvent){
+			var oSelectedItem = oEvent.getParameter("selectedItem");
+			if (oSelectedItem) {
+				var oInput = sap.ui.getCore().byId(this.g_dimension_input_id);
+					var sDescription = oSelectedItem.getDescription();
+ 
+					oInput.setValue(sDescription);
+			}
+			oEvent.getSource().getBinding("items").filter([]);
+		},
+		
+		onPlanningAmountChange:function(oEvent){
+			var newValue = oEvent.getParameter("value");
+			var oSource = oEvent.getSource();
+			var oModel = oSource.getBindingContext().getModel();
+			var sPath = oSource.getBindingContext().getPath();
+			var oCurrentObject = oModel.getProperty(sPath);
+			
+			var temp = sPath.split("/");
+			var currentIndex = temp[temp.length-1];
+			temp.splice(temp.length-1,1);
+			var sParentPath = temp.join("/"); 
+			
+			var objects = oModel.getProperty(sParentPath);
+			
+			var iTotal = 0;
+			var iParent = Number(oCurrentObject.parentAmount);
+			for(var x in objects){
+				if(x !== currentIndex){
+					iTotal += Number(objects[x].planningAmount);
+					
+					//clear other planning amount value state
+					objects[x].valueState="None";
+					objects[x].valueStateText="";
+				}
+			}
+			
+			if(iTotal + Number(newValue) != iParent){
+				oSource.setValueState("Error");
+				oSource.setValueStateText("Childs Total Planning Amount is not Match Parent Amount!");
+			}else{
+				oSource.setValueState("None");
+			}
+			
+		},
+		
+		onWizardReviewBack:function(oEvent){
+			var oNavContainer = sap.ui.getCore().byId("wizardContainer");
+			oNavContainer.backToPage("wizardContentPage");
 		}
-
 	});
 });

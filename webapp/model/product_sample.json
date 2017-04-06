@@ -1,0 +1,7 @@
+{
+	"Dimensions":[
+		{"key":"A", "value": "A", "type":"Product"},
+		{"key":"B", "value": "B", "type":"Product"},
+		{"key": "C", "value": "C", "type":"Product"}
+	]
+}

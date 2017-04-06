@@ -1,0 +1,8 @@
+{
+	"Dimensions":[
+		{"key":"CD", "value": "Chengdu", "type":"City"},
+		{"key":"SH", "value": "Shanghai", "type":"City"},
+		{"key":"CQ", "value": "Chongqing", "type":"City"},
+		{"key":"BJ", "value": "Beijing", "type":"City"}
+	]
+}

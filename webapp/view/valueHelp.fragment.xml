@@ -1,0 +1,11 @@
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<SelectDialog noDataText="No Data Found" title="Select Dimension"
+		search="onSelectSearch" confirm="onSelectClose" close="handleClose"
+		items="{
+			path: '/Dimensions'
+		}">
+		<StandardListItem title="{key}" description="{value}"
+			iconDensityAware="false" iconInset="false" type="Active" />
+	</SelectDialog>
+</core:FragmentDefinition>
