@@ -1,7 +1,7 @@
 <core:FragmentDefinition xmlns="sap.m"
 	xmlns:core="sap.ui.core">
 	<SelectDialog noDataText="No Data Found" title="Select Dimension"
-		search="onSelectSearch" confirm="onSelectClose" close="handleClose"
+		search="onSelectSearch" confirm="onSelectClose" cancel="handleClose"
 		items="{
 			path: '/Dimensions'
 		}">

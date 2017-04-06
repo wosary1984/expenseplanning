@@ -119,7 +119,7 @@ sap.ui.define([
 
 					var oData = oSourceList.getModel().getData();
 					var temp = path.split("/");
-					oData.DimensionCollection.splice(temp[temp.length - 1], 1)
+					oData.DimensionCollection.splice(temp[temp.length - 1], 1);
 					oData.height = oData.DimensionCollection.length;
 					oSourceList.getModel().setData(oData);
 
@@ -525,7 +525,7 @@ sap.ui.define([
 				}
 			}
 			
-			if(iTotal + Number(newValue) != iParent){
+			if(iTotal + Number(newValue) !== iParent){
 				oSource.setValueState("Error");
 				oSource.setValueStateText("Childs Total Planning Amount is not Match Parent Amount!");
 			}else{
