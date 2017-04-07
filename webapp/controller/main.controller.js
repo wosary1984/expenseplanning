@@ -35,7 +35,9 @@ sap.ui.define([
 			var sUrl = this.c4c_my500047_basic_destination + this.c4c_relative_path +
 				"BO_ExpensePlanRootCollection?$format=json&$expand=BO_ExpensePlanExpenseNode";
 			var oList = this.getView().byId("c4c_data");
+			
 			oList.setBusy(true);
+			
 			return AjaxUtil.asynchGetJSON(this,
 				sUrl, doneCallback, failCallback, alwaysCallback);
 		},
@@ -90,14 +92,23 @@ sap.ui.define([
 
 					var oData = oSourceList.getModel("dimension").getData();
 					var temp = path.split("/");
-					oData.DimensionCollection.splice(temp[temp.length - 1], 1);
+					oData.d.results.splice(temp[temp.length - 1], 1);
 					oSourceList.getModel("dimension").setData(oData);
 
 					var oTargetData = oTargetList.getModel().getData();
 					// var length = oTargetData.DimensionCollection.length;
 					oTargetData.DimensionCollection.push({
-						name: object.key
+						DimensionName: object.DimensionName,
+						DimensionId: object.DimensionId,
+						IsMasterData: object.DimensionName,
+						DimensionDesc:object.IsMasterData,
+						MD_BOName:object.MD_BOName,
+						MD_DescField:object.MD_DescField,
+						MD_NameField:object.MD_NameField
 					});
+					
+					this._reOrderDimension(oTargetData.DimensionCollection);
+					
 					oTargetData.height = oTargetData.DimensionCollection.length;
 					oTargetList.getModel().setData(oTargetData);
 
@@ -107,6 +118,14 @@ sap.ui.define([
 			}
 		},
 
+		_reOrderDimension:function(DimensionCollection){
+			for (var x in DimensionCollection){
+				if(DimensionCollection[x]){
+					DimensionCollection[x].level = Number(x) +1;
+				}
+			}
+		},
+		
 		onRemoveDimension: function(oEvent) {
 			var oSourceList = sap.ui.getCore().byId("idTargetDimensions");
 			var oTargetList = sap.ui.getCore().byId("idAvaiableDimensions");
@@ -121,13 +140,19 @@ sap.ui.define([
 					var temp = path.split("/");
 					oData.DimensionCollection.splice(temp[temp.length - 1], 1);
 					oData.height = oData.DimensionCollection.length;
+					this._reOrderDimension(oData.DimensionCollection);
 					oSourceList.getModel().setData(oData);
 
 					var oTargetData = oTargetList.getModel("dimension").getData();
 					// var length = oTargetData.DimensionCollection.length;
-					oTargetData.DimensionCollection.push({
-						key: object.name,
-						value: object.name
+					oTargetData.d.results.push({
+						DimensionName: object.DimensionName,
+						DimensionId: object.DimensionId,
+						IsMasterData: object.DimensionName,
+						DimensionDesc:object.IsMasterData,
+						MD_BOName:object.MD_BOName,
+						MD_DescField:object.MD_DescField,
+						MD_NameField:object.MD_NameField
 					});
 					oTargetList.getModel("dimension").setData(oTargetData);
 
@@ -159,7 +184,7 @@ sap.ui.define([
 						return;
 					}
 					swapItems(oData.DimensionCollection, index, index - 1);
-
+					this._reOrderDimension(oData.DimensionCollection);
 					oSourceList.getModel().setData(oData);
 					// oSourceList.removeSelections(true);
 
@@ -191,7 +216,7 @@ sap.ui.define([
 						return;
 					}
 					swapItems(oData.DimensionCollection, index, index + 1);
-
+					this._reOrderDimension(oData.DimensionCollection);
 					oSourceList.getModel().setData(oData);
 					// oSourceList.removeSelections(true);
 
@@ -213,10 +238,20 @@ sap.ui.define([
 			dialog.setModel(dialogModel);
 
 			//
-			var dimensionModelPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/dimension_sample.json");
-			var dimensionModel = new sap.ui.model.json.JSONModel();
-			dimensionModel.loadData(dimensionModelPath, null, false);
-			dialog.setModel(dimensionModel, "dimension");
+			var sUrl = this.c4c_my500047_basic_destination + this.c4c_relative_path +
+			"BO_ExpenseDimensionCollection?$format=json";
+			AjaxUtil.asynchGetJSON(this,sUrl, function(data){
+				var oModel = new sap.ui.model.json.JSONModel();
+				oModel.setData(data);
+				dialog.setModel(dimensionModel, "dimension");
+			}, function(){
+				var dimensionModelPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/dimension_sample.json");
+				var dimensionModel = new sap.ui.model.json.JSONModel();
+				dimensionModel.loadData(dimensionModelPath, null, false);
+				dialog.setModel(dimensionModel, "dimension");
+			}, function(){});
+			
+			
 
 			//
 			var selectedDimensionModelPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/selected_dimension_template.json");

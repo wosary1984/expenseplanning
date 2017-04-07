@@ -1,23 +1,48 @@
 {
-	"DimensionCollection": [{
-		"key": "Area",
-		"value": "Area",
-		"visible": true
-	}, {
-		"key": "City",
-		"value": "City",
-		"visible": true
-	}, {
-		"key": "Product",
-		"value": "Product",
-		"visible": true
-	}, {
-		"key": "Channel",
-		"value": "Channel",
-		"visible": true
-	}, {
-		"key": "Quarter",
-		"value": "Quarter",
-		"visible": true
-	}]
+  "d": {
+    "results": [
+      {
+        "__metadata": {
+          "uri": "https://my500047.c4c.saphybriscloud.cn/sap/c4c/odata/cust/v1/c4cext/BO_ExpenseDimensionCollection('00163E217B101ED786E7B648A3AB71D7')",
+          "type": "cust.BO_ExpenseDimension"
+        },
+        "ObjectID": "00163E217B101ED786E7B648A3AB71D7",
+        "DimensionId": "F5957CDA1B3C11E7872D56000061AB61",
+        "DimensionDesc": "全国各地名称",
+        "DimensionName": "地区",
+        "IsMasterData": false,
+        "MD_BOName": "",
+        "MD_DescField": "",
+        "MD_NameField": ""
+      },
+      {
+        "__metadata": {
+          "uri": "https://my500047.c4c.saphybriscloud.cn/sap/c4c/odata/cust/v1/c4cext/BO_ExpenseDimensionCollection('00163E217B101ED786E7BAD9792B31DB')",
+          "type": "cust.BO_ExpenseDimension"
+        },
+        "ObjectID": "00163E217B101ED786E7BAD9792B31DB",
+        "DimensionId": "D8F74EC21B3D11E79B3856000061AB61",
+        "DimensionDesc": "商品销售的渠道",
+        "DimensionName": "渠道",
+        "IsMasterData": false,
+        "MD_BOName": "",
+        "MD_DescField": "",
+        "MD_NameField": ""
+      },
+      {
+        "__metadata": {
+          "uri": "https://my500047.c4c.saphybriscloud.cn/sap/c4c/odata/cust/v1/c4cext/BO_ExpenseDimensionCollection('00163E217B101EE786B9B4BC800BFE1E')",
+          "type": "cust.BO_ExpenseDimension"
+        },
+        "ObjectID": "00163E217B101EE786B9B4BC800BFE1E",
+        "DimensionId": "ID",
+        "DimensionDesc": "",
+        "DimensionName": "Dimentsion1",
+        "IsMasterData": false,
+        "MD_BOName": "",
+        "MD_DescField": "",
+        "MD_NameField": ""
+      }
+    ]
+  }
 }

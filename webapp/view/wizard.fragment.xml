@@ -73,9 +73,9 @@
 														<items>
 															<List id="idAvaiableDimensions" mode="SingleSelectMaster"
 																noDataText="No Data"
-																items="{path:'dimension>/DimensionCollection', sorter:{path:'key'}}">
+																items="{path:'dimension>/d/results', sorter:{path:'DimensionId'}}">
 																<items>
-																	<StandardListItem title="{dimension>value}"></StandardListItem>
+																	<DisplayListItem label="{dimension>DimensionName}" value="{dimension>DimensionDesc}"/>
 																</items>
 																<layoutData>
 																	<FlexItemData growFactor="10" />
@@ -101,8 +101,8 @@
 													<List id="idTargetDimensions" mode="SingleSelectMaster"
 														noDataText="No Data" items="{path:'/DimensionCollection'}">
 														<items>
-															<StandardListItem title="{name}"
-																counter="{level}"></StandardListItem>
+															<DisplayListItem label="{DimensionName}"
+																value="{level}"/>
 														</items>
 														<headerToolbar>
 															<Toolbar>
