@@ -6,7 +6,7 @@ com.sap.expenseplanning.util.Formatter = {
 	},
 
 	valuteState : function(text) {
-		if (text == "")
+		if (text === "")
 			return "Error";
 		else
 			return "None";

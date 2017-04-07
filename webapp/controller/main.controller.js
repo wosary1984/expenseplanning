@@ -239,11 +239,11 @@ sap.ui.define([
 
 			//
 			var sUrl = this.c4c_my500047_basic_destination + this.c4c_relative_path +
-			"BO_ExpenseDimensionCollection?$format=json";
+			"BO_ExpenseDimensionRootCollection?$format=json";
 			AjaxUtil.asynchGetJSON(this,sUrl, function(data){
 				var oModel = new sap.ui.model.json.JSONModel();
 				oModel.setData(data);
-				dialog.setModel(dimensionModel, "dimension");
+				dialog.setModel(oModel, "dimension");
 			}, function(){
 				var dimensionModelPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/dimension_sample.json");
 				var dimensionModel = new sap.ui.model.json.JSONModel();
@@ -333,13 +333,13 @@ sap.ui.define([
 			var result = true;
 			var oData = this._getDialog().getModel().getData();
 			var validateNode=function(node){
-				var result = true;
-				if(node.valueState != "None" || node.text =="")
+				var r = true;
+				if(node.valueState !== "None" || node.text ==="")
 					return false;
 				else {
 					for(var x in node.nodes){
-						result= validateNode(node.nodes[x]);	
-						if(!result)
+						r= validateNode(node.nodes[x]);	
+						if(!r)
 							break;
 					}
 				}
