@@ -15,6 +15,7 @@ sap.ui.define([
 
 		g_current_cell_context: null,
 		g_dimension_input_id: '',
+		g_filter:null,
 
 		initFunction: function() {
 			var doneCallback = function(data) {
@@ -202,10 +203,11 @@ sap.ui.define([
 			var object = oSource.getBindingContext().getObject();
 			var oSourceList = sap.ui.getCore().byId("idTargetDimensions");
 			var oTargetList = sap.ui.getCore().byId("idAvaiableDimensions");
+			var oData = oSourceList.getModel().getData();
 			if (object && object.IsCategory) {
 
 				if (oSourceList) {
-					var oData = oSourceList.getModel().getData();
+					
 					var temp = path.split("/");
 					oData.DimensionCollection.splice(temp[temp.length - 1], 1);
 					oData.height = oData.DimensionCollection.length;
@@ -228,7 +230,6 @@ sap.ui.define([
 					this._discardToSecondStep();
 				}
 			} else if (object && !object.IsCategory) {
-				var oData = oSourceList.getModel().getData();
 				var temp = path.split("/");
 				var currentIndex = temp[temp.length - 1];
 				temp.splice(temp.length - 1, 1);
@@ -352,6 +353,8 @@ sap.ui.define([
 				oModel.setData(data);
 				dialog.setModel(oModel, "dimension");
 			}, function() {
+				
+				//remove below code in future
 				var dimensionModelPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/dimension_sample.json");
 				var dimensionModel = new sap.ui.model.json.JSONModel();
 				dimensionModel.loadData(dimensionModelPath, null, false);
@@ -364,10 +367,6 @@ sap.ui.define([
 			selectedDimensionModel.loadData(selectedDimensionModelPath, null, false);
 			dialog.setModel(selectedDimensionModel, "selected_dimension");
 			//
-			var treeModelPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/tree_sample.json");
-			var treeModel = new sap.ui.model.json.JSONModel();
-			treeModel.loadData(treeModelPath, null, false);
-			dialog.setModel(treeModel, "tree");
 		},
 
 		_getDialog: function() {
@@ -647,51 +646,72 @@ sap.ui.define([
 			if (level !== 0) {
 				var oData = this._getDialog().getModel().getData();
 				var dimension = oData.DimensionCollection[level - 1];
-
-				var oModel = this._createDataModel(dimension);
-
-				if (oModel) {
-
 					if (!this._oValueHelpDialog) {
 						this._oValueHelpDialog = sap.ui.xmlfragment("com.sap.expenseplanning.view.valueHelp", this);
 					}
-					this._oValueHelpDialog.setModel(oModel);
-					oModel.updateBindings();
-					// clear the old search filter
-					this._oValueHelpDialog.getBinding("items").filter([]);
-
+					
+					var sUrl = this.c4c_my500047_basic_destination + this.c4c_relative_path +
+					"BO_ExpenseDimensionItemRootCollection?$format=json";
+					var oModel =this._oValueHelpDialog.getModel();
+					
+					if(oModel){
+						this.g_filter = new sap.ui.model.Filter("DimensionTypeID", sap.ui.model.FilterOperator.EQ, dimension.DimensionId);
+						oModel.updateBindings();
+						this._oValueHelpDialog.getBinding("items").filter([this.g_filter]);
+						
+					}else{
+						AjaxUtil.asynchGetJSON(this, sUrl, function(data) {
+							oModel = new sap.ui.model.json.JSONModel();
+							oModel.setData(data);
+							
+							this._oValueHelpDialog.setModel(oModel);
+							this.g_filter  = new sap.ui.model.Filter("DimensionTypeID", sap.ui.model.FilterOperator.EQ, dimension.DimensionId);
+							oModel.updateBindings();
+							this._oValueHelpDialog.getBinding("items").filter([this.g_filter ]);
+							
+							
+						}, function() {
+							var sPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/dimension_item_sample.json");
+							oModel = new sap.ui.model.json.JSONModel();
+							oModel.loadData(sPath, null, false);
+							
+							this._oValueHelpDialog.setModel(oModel);
+							this.g_filter  = new sap.ui.model.Filter("DimensionTypeID", sap.ui.model.FilterOperator.EQ, dimension.DimensionId);
+							oModel.updateBindings();
+							this._oValueHelpDialog.getBinding("items").filter([this.g_filter ]);
+							
+						}, function() {});
+					}
 					// toggle compact style
 					jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this._oValueHelpDialog);
 					this._oValueHelpDialog.open();
-				}
 			}
 		},
 
 		_createDataModel: function(dimension) {
-			if (dimension.DimensionId === "AREA" || dimension.DimensionId === "CITY") {
-				var sModelPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/city_sample.json");
-				var oModel = new sap.ui.model.json.JSONModel();
-				oModel.loadData(sModelPath, null, false);
+			
+			var sUrl = this.c4c_my500047_basic_destination + this.c4c_relative_path +
+			"BO_ExpenseDimensionItemRootCollection?$format=json";
+			var oModel ;
+			
+			AjaxUtil.asynchGetJSON(this, sUrl, function(data) {
+				oModel = new sap.ui.model.json.JSONModel();
+				oModel.setData(data);
 				return oModel;
-			} else if (dimension.DimensionId === "PRODUCT") {
-				var sModelPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/product_sample.json");
-				var oModel = new sap.ui.model.json.JSONModel();
-				oModel.loadData(sModelPath, null, false);
+			}, function() {
+				var sPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/dimension_item_sample.json");
+				oModel = new sap.ui.model.json.JSONModel();
+				oModel.loadData(sPath, null, false);
 				return oModel;
-			}
-			if (dimension.DimensionId === "CHANNEL") {
-				var sModelPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/channel_sample.json");
-				var oModel = new sap.ui.model.json.JSONModel();
-				oModel.loadData(sModelPath, null, false);
-				return oModel;
-			}
+			}, function() {});
+	
 		},
 
 		onSelectSearch: function(oEvent) {
 			var sValue = oEvent.getParameter("value");
-			var oFilter = new sap.ui.model.Filter("value", sap.ui.model.FilterOperator.Contains, sValue);
+			var oFilter = new sap.ui.model.Filter("ItemId", sap.ui.model.FilterOperator.Contains, sValue);
 			var oBinding = oEvent.getSource().getBinding("items");
-			oBinding.filter([oFilter]);
+			oBinding.filter([oFilter,this.g_filter ]);
 		},
 
 		onSelectClose: function(oEvent) {
@@ -699,8 +719,9 @@ sap.ui.define([
 			if (oSelectedItem) {
 				var oInput = sap.ui.getCore().byId(this.g_dimension_input_id);
 				var sDescription = oSelectedItem.getDescription();
+				var sTitle = oSelectedItem.getTitle();
 
-				oInput.setValue(sDescription);
+				oInput.setValue(sTitle + "("+ sDescription +")");
 
 				this._discardToSecondStep();
 			}

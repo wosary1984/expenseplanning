@@ -60,14 +60,14 @@
 									validated a Next button is visualized in the Wizard control. -->
 								<WizardStep id="SetDimensionStep" validated="false" title="Set Dimension" activate="setDimensionActivate">
 									<MessageStrip text="设置维度结构 " showIcon="true"/>
-									<List id="idAvaiableDimensions" mode="SingleSelectLeft" noDataText="No Data"
+									<List id="idAvaiableDimensions" mode="SingleSelect" noDataText="No Data"
 										items="{path:'dimension>/d/results', sorter:{path:'DimensionId'}}">
 										<items>
 											<CustomListItem>
 												<FlexBox alignItems="Start" justifyContent="SpaceBetween">
 													<items>
-														<ObjectIdentifier title="{dimension>DimensionName}" titleActive="true"/>
-														<Label text="{dimension>DimensionDesc}"/>
+														<ObjectIdentifier title="{dimension>DimensionName}" class="sapUiResponsiveMargin" titleActive="true"/>
+														<Label text="{dimension>DimensionDesc}" class="sapUiResponsiveMargin"/>
 													</items>
 												</FlexBox>
 											</CustomListItem>
