@@ -9,8 +9,8 @@
 						<headerToolbar>
 							<Toolbar>
 								<ToolbarSpacer/>
-								<Button icon="sap-icon://create" press="handleCreate"/>
-								<Button icon="sap-icon://refresh" press="handleRefresh"/>
+								<Button icon="sap-icon://create" press="handleCreate" tooltip="Create New Expense Plan"/>
+								<Button icon="sap-icon://refresh" press="handleRefresh" tooltip="Refresh"/>
 							</Toolbar>
 						</headerToolbar>
 						<items>

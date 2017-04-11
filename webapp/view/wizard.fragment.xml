@@ -60,8 +60,7 @@
 									validated a Next button is visualized in the Wizard control. -->
 								<WizardStep id="SetDimensionStep" validated="false" title="Set Dimension" activate="setDimensionActivate">
 									<MessageStrip text="设置维度结构 " showIcon="true"/>
-									<List id="idAvaiableDimensions" mode="SingleSelect" noDataText="No Data"
-										items="{path:'dimension>/d/results', sorter:{path:'DimensionId'}}">
+									<List id="idAvaiableDimensions" mode="SingleSelect" noDataText="No Data" items="{path:'dimension>/d/results', sorter:{path:'DimensionId'}}">
 										<items>
 											<CustomListItem>
 												<FlexBox alignItems="Start" justifyContent="SpaceBetween">
@@ -76,7 +75,7 @@
 											<Toolbar>
 												<Title text="Available Dimensions" level="H2"/>
 												<ToolbarSpacer/>
-												<Button icon="sap-icon://add" press="onAddDimension"></Button>
+												<Button icon="sap-icon://add" press="onAddDimension" tooltip="Add Dimension"/>
 											</Toolbar>
 										</headerToolbar>
 									</List>
@@ -167,8 +166,8 @@
 														</List>
 														<FlexBox height="25%" direction="Column" alignItems="Center" justifyContent="Center">
 															<items>
-																<Button icon="sap-icon://open-command-field" press="onAddDimension" ariaLabelledBy="editButtonLabel"/>
-																<Button icon="sap-icon://close-command-field" press="onRemoveDimension" ariaLabelledBy="editButtonLabel"/>
+																<Button icon="sap-icon://open-command-field" press="onAddDimension" tooltip="Add Dimension"/>
+																<Button icon="sap-icon://close-command-field" press="onRemoveDimension" tooltip="Remove Dimension"/>
 															</items>
 															<layoutData>
 																<FlexItemData growFactor="2"/>

@@ -14,8 +14,8 @@ sap.ui.define([
 		c4c_relative_path: "/sap/c4c/odata/cust/v1/c4cext/",
 
 		g_current_cell_context: null,
-		g_dimension_input_id: '',
-		g_filter:null,
+		g_dimension_input_id: "",
+		g_filter: null,
 
 		initFunction: function() {
 			var doneCallback = function(data) {
@@ -204,11 +204,12 @@ sap.ui.define([
 			var oSourceList = sap.ui.getCore().byId("idTargetDimensions");
 			var oTargetList = sap.ui.getCore().byId("idAvaiableDimensions");
 			var oData = oSourceList.getModel().getData();
+			var temp;
 			if (object && object.IsCategory) {
 
 				if (oSourceList) {
-					
-					var temp = path.split("/");
+
+					temp = path.split("/");
 					oData.DimensionCollection.splice(temp[temp.length - 1], 1);
 					oData.height = oData.DimensionCollection.length;
 					this._reOrderDimension(oData.DimensionCollection);
@@ -230,8 +231,7 @@ sap.ui.define([
 					this._discardToSecondStep();
 				}
 			} else if (object && !object.IsCategory) {
-				var temp = path.split("/");
-				var currentIndex = temp[temp.length - 1];
+				temp = path.split("/");
 				temp.splice(temp.length - 1, 1);
 				var sParentPath = temp.join("/");
 				var oParentObject = oSourceList.getModel().getProperty(sParentPath);
@@ -353,7 +353,7 @@ sap.ui.define([
 				oModel.setData(data);
 				dialog.setModel(oModel, "dimension");
 			}, function() {
-				
+
 				//remove below code in future
 				var dimensionModelPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/dimension_sample.json");
 				var dimensionModel = new sap.ui.model.json.JSONModel();
@@ -415,8 +415,6 @@ sap.ui.define([
 					if (this._thirdStepValidation()) {
 						var oNavContainer = sap.ui.getCore().byId("wizardContainer");
 						oNavContainer.to(this._getReviewPage());
-					} else {
-
 					}
 				}
 
@@ -438,13 +436,15 @@ sap.ui.define([
 			var oData = this._getDialog().getModel().getData();
 			var validateNode = function(node) {
 				var r = true;
-				if (node.valueState !== "None" || node.text === "")
+				if (node.valueState !== "None" || node.text === "") {
 					return false;
-				else {
+				} else {
 					for (var x in node.nodes) {
 						r = validateNode(node.nodes[x]);
-						if (!r)
+						if (!r) {
 							break;
+						}
+
 					}
 				}
 				return result;
@@ -488,7 +488,7 @@ sap.ui.define([
 		_constructTreeNode: function(parent, dimensions) {
 			if (parent.level !== parent.height) {
 				if (dimensions[parent.level]) {
-					var iAverage = parseInt(parent.planningAmount / dimensions[parent.level].nodes.length);
+					var iAverage = parseInt(parent.planningAmount / (dimensions[parent.level].nodes.length));
 					var iResidue = parent.planningAmount % dimensions[parent.level].nodes.length;
 
 					for (var x in dimensions[parent.level].nodes) {
@@ -646,54 +646,53 @@ sap.ui.define([
 			if (level !== 0) {
 				var oData = this._getDialog().getModel().getData();
 				var dimension = oData.DimensionCollection[level - 1];
-					if (!this._oValueHelpDialog) {
-						this._oValueHelpDialog = sap.ui.xmlfragment("com.sap.expenseplanning.view.valueHelp", this);
-					}
-					
-					var sUrl = this.c4c_my500047_basic_destination + this.c4c_relative_path +
+				if (!this._oValueHelpDialog) {
+					this._oValueHelpDialog = sap.ui.xmlfragment("com.sap.expenseplanning.view.valueHelp", this);
+				}
+
+				var sUrl = this.c4c_my500047_basic_destination + this.c4c_relative_path +
 					"BO_ExpenseDimensionItemRootCollection?$format=json";
-					var oModel =this._oValueHelpDialog.getModel();
-					
-					if(oModel){
+				var oModel = this._oValueHelpDialog.getModel();
+
+				if (oModel) {
+					this.g_filter = new sap.ui.model.Filter("DimensionTypeID", sap.ui.model.FilterOperator.EQ, dimension.DimensionId);
+					oModel.updateBindings();
+					this._oValueHelpDialog.getBinding("items").filter([this.g_filter]);
+
+				} else {
+					AjaxUtil.asynchGetJSON(this, sUrl, function(data) {
+						oModel = new sap.ui.model.json.JSONModel();
+						oModel.setData(data);
+
+						this._oValueHelpDialog.setModel(oModel);
 						this.g_filter = new sap.ui.model.Filter("DimensionTypeID", sap.ui.model.FilterOperator.EQ, dimension.DimensionId);
 						oModel.updateBindings();
 						this._oValueHelpDialog.getBinding("items").filter([this.g_filter]);
-						
-					}else{
-						AjaxUtil.asynchGetJSON(this, sUrl, function(data) {
-							oModel = new sap.ui.model.json.JSONModel();
-							oModel.setData(data);
-							
-							this._oValueHelpDialog.setModel(oModel);
-							this.g_filter  = new sap.ui.model.Filter("DimensionTypeID", sap.ui.model.FilterOperator.EQ, dimension.DimensionId);
-							oModel.updateBindings();
-							this._oValueHelpDialog.getBinding("items").filter([this.g_filter ]);
-							
-							
-						}, function() {
-							var sPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/dimension_item_sample.json");
-							oModel = new sap.ui.model.json.JSONModel();
-							oModel.loadData(sPath, null, false);
-							
-							this._oValueHelpDialog.setModel(oModel);
-							this.g_filter  = new sap.ui.model.Filter("DimensionTypeID", sap.ui.model.FilterOperator.EQ, dimension.DimensionId);
-							oModel.updateBindings();
-							this._oValueHelpDialog.getBinding("items").filter([this.g_filter ]);
-							
-						}, function() {});
-					}
-					// toggle compact style
-					jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this._oValueHelpDialog);
-					this._oValueHelpDialog.open();
+
+					}, function() {
+						var sPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/dimension_item_sample.json");
+						oModel = new sap.ui.model.json.JSONModel();
+						oModel.loadData(sPath, null, false);
+
+						this._oValueHelpDialog.setModel(oModel);
+						this.g_filter = new sap.ui.model.Filter("DimensionTypeID", sap.ui.model.FilterOperator.EQ, dimension.DimensionId);
+						oModel.updateBindings();
+						this._oValueHelpDialog.getBinding("items").filter([this.g_filter]);
+
+					}, function() {});
+				}
+				// toggle compact style
+				jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this._oValueHelpDialog);
+				this._oValueHelpDialog.open();
 			}
 		},
 
 		_createDataModel: function(dimension) {
-			
+
 			var sUrl = this.c4c_my500047_basic_destination + this.c4c_relative_path +
-			"BO_ExpenseDimensionItemRootCollection?$format=json";
-			var oModel ;
-			
+				"BO_ExpenseDimensionItemRootCollection?$format=json";
+			var oModel;
+
 			AjaxUtil.asynchGetJSON(this, sUrl, function(data) {
 				oModel = new sap.ui.model.json.JSONModel();
 				oModel.setData(data);
@@ -704,14 +703,14 @@ sap.ui.define([
 				oModel.loadData(sPath, null, false);
 				return oModel;
 			}, function() {});
-	
+
 		},
 
 		onSelectSearch: function(oEvent) {
 			var sValue = oEvent.getParameter("value");
 			var oFilter = new sap.ui.model.Filter("ItemId", sap.ui.model.FilterOperator.Contains, sValue);
 			var oBinding = oEvent.getSource().getBinding("items");
-			oBinding.filter([oFilter,this.g_filter ]);
+			oBinding.filter([oFilter, this.g_filter]);
 		},
 
 		onSelectClose: function(oEvent) {
@@ -721,7 +720,7 @@ sap.ui.define([
 				var sDescription = oSelectedItem.getDescription();
 				var sTitle = oSelectedItem.getTitle();
 
-				oInput.setValue(sTitle + "("+ sDescription +")");
+				oInput.setValue(sTitle + "(" + sDescription + ")");
 
 				this._discardToSecondStep();
 			}
