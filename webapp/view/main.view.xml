@@ -4,7 +4,7 @@
 		<pages>
 			<Page title="{i18n>title}">
 				<content>
-					<List id="c4c_data" items="{path:'/',sorter:{ path:'ExpensePlan'}}" headerText="Expense Plan" growing="true" growingThreshold="4"
+					<List id="c4c_data" items="{path:'/',sorter:{ path:'ExpensePlanId'}}" headerText="Expense Plan" growing="true" growingThreshold="4"
 						growingScrollToLoad="false">
 						<headerToolbar>
 							<Toolbar>
@@ -14,7 +14,15 @@
 							</Toolbar>
 						</headerToolbar>
 						<items>
-							<StandardListItem title="{ExpensePlan}" description="{ExpensePlanDesc}" iconDensityAware="false" iconInset="false"/>
+							<ObjectListItem title="Plan Id: {ExpensePlanId}" intro ="Plan Name: {ExpensePlanName}" type="Active" 
+								number="{ parts:[{path:'TotalBudget/content'},{path:'TotalBudget/currencyCode'}], type: 'sap.ui.model.type.Currency', formatOptions: {showMeasure: false} }"
+								numberUnit="{TotalBudget/currencyCode}">
+								<attributes>
+									<ObjectAttribute text="Start Date: {PlanStartDate}"/>
+									<ObjectAttribute text="End Date: {PlanEndDate}"/>
+									<ObjectAttribute text="EmployeeID: {EmployeeID}"/>
+								</attributes>
+							</ObjectListItem>
 						</items>
 					</List>
 				</content>
