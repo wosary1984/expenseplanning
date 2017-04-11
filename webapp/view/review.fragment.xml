@@ -40,7 +40,7 @@
 				</form:content>
 			</form:SimpleForm>
 
-			<form:SimpleForm title="3. Expense Planning Details"
+			<form:SimpleForm title="3. Expense Planning Structure"
 				minWidth="1024" editable="false" layout="ResponsiveGridLayout">
 				<form:content>
 					<Label text="Planning Structure" design="Bold" />

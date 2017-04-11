@@ -10,5 +10,10 @@ com.sap.expenseplanning.util.Formatter = {
 			return "Error";
 		else
 			return "None";
+	},
+
+	levelToLanesPosition : function(level) {
+		if (Number(level) > 0)
+			return (Number(level) - 1);
 	}
 };

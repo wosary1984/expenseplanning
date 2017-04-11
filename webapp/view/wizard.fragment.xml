@@ -1,12 +1,12 @@
 <core:FragmentDefinition xmlns="sap.m"
 	xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout" xmlns:form="sap.ui.layout.form"
-	xmlns:table="sap.ui.table" xmlns:u="sap.ui.unified">
+	xmlns:table="sap.ui.table" xmlns:u="sap.ui.unified" xmlns:c="sap.suite.ui.commons">
 	<Dialog title="Create Expense Plan" binding="{/}" contentWidth="80%"
 		contentHeight="80%" draggable="false" resizable="true" afterClose="onDialogAfterClose">
 		<content>
 			<NavContainer id="wizardContainer" width="100%" height="100%">
 				<pages>
-					<Page id="wizardContentPage" showHeader="false">
+					<Page id="wizardContentPage" showHeader="false" class="sapUiContentPadding">
 						<content>
 							<Wizard id="CreateExpensePlanWizard" showNextButton="false"
 								complete="basicStepComplete">
@@ -64,64 +64,184 @@
 								<WizardStep id="SetDimensionStep" validated="false"
 									title="Set Dimension" activate="setDimensionActivate">
 									<MessageStrip text="设置维度结构 " showIcon="true" />
-									<l:VerticalLayout width="100%">
-										<l:BlockLayout background="{/selectedBackground}">
-											<l:BlockLayoutRow>
-												<l:BlockLayoutCell width="1"
-													title="Available Dimension">
-													<FlexBox>
-														<items>
-															<List id="idAvaiableDimensions" mode="SingleSelectMaster"
-																noDataText="No Data"
-																items="{path:'dimension>/d/results', sorter:{path:'DimensionId'}}">
-																<items>
-																	<DisplayListItem label="{dimension>DimensionName}" value="{dimension>DimensionDesc}"/>
-																</items>
-																<layoutData>
-																	<FlexItemData growFactor="10" />
-																</layoutData>
-															</List>
-															<FlexBox height="25%" direction="Column"
-																alignItems="Center" justifyContent="Center">
-																<items>
-																	<Button icon="sap-icon://open-command-field"
-																		press="onAddDimension" ariaLabelledBy="editButtonLabel" />
-																	<Button icon="sap-icon://close-command-field"
-																		press="onRemoveDimension" ariaLabelledBy="editButtonLabel" />
-																</items>
-																<layoutData>
-																	<FlexItemData growFactor="2" />
-																</layoutData>
-															</FlexBox>
-														</items>
-													</FlexBox>
-												</l:BlockLayoutCell>
-												<l:BlockLayoutCell width="1"
-													title="Selected Dimension">
-													<List id="idTargetDimensions" mode="SingleSelectMaster"
-														noDataText="No Data" items="{path:'/DimensionCollection'}">
-														<items>
-															<DisplayListItem label="{DimensionName}"
-																value="{level}"/>
-														</items>
-														<headerToolbar>
+									<List id="idAvaiableDimensions" mode="SingleSelectLeft"
+										noDataText="No Data"
+										items="{path:'dimension>/d/results', sorter:{path:'DimensionId'}}">
+										<items>
+											<CustomListItem>
+												<FlexBox alignItems="Start" justifyContent="SpaceBetween">
+													<items>
+														<ObjectIdentifier title="{dimension>DimensionName}"
+															titleActive="true" />
+														<Label text="{dimension>DimensionDesc}" />
+													</items>
+												</FlexBox>
+											</CustomListItem>
+										</items>
+										<headerToolbar>
+											<Toolbar>
+												<Title text="Available Dimensions" level="H2" />
+												<ToolbarSpacer />
+												<Button icon="sap-icon://add" press="onAddDimension"></Button>
+											</Toolbar>
+										</headerToolbar>
+									</List>
+									<List id="idTargetDimensions23" mode="SingleSelectMaster"
+										noDataText="No Data" items="{path:'/DimensionCollection'}"
+										visible="false">
+										<items>
+											<CustomListItem>
+												<FlexBox alignItems="Start" justifyContent="SpaceBetween">
+													<items>
+														<ObjectIdentifier title="{DimensionName}"
+															titleActive="true" class="sapUiResponsiveMargin"
+															titlePress="onTitlePressed" />
+														<ObjectIdentifier title="{level}"
+															titleActive="true" class="sapUiResponsiveMargin" />
+													</items>
+												</FlexBox>
+											</CustomListItem>
+											<!-- <DisplayListItem label="{DimensionName}" value="{level}" 
+												/> -->
+										</items>
+										<headerToolbar>
+											<Toolbar>
+												<Title text="Selected Dimensions" level="H2" />
+												<ToolbarSpacer />
+												<Button icon="sap-icon://up" press="onUpDimension" />
+												<Button icon="sap-icon://down" press="onDownDimension" />
+												<Button icon="sap-icon://decline" press="onRemoveDimension" />
+											</Toolbar>
+										</headerToolbar>
+									</List>
+									<!-- -->
+									<Panel width="100%">
+										<headerToolbar>
+											<Toolbar>
+												<Title text="Selected Dimensions" />
+												<ToolbarSpacer />
+
+											</Toolbar>
+										</headerToolbar>
+										<content>
+											<table:TreeTable id="idTargetDimensions"
+												rows="{path:'/DimensionCollection'}" selectionMode="MultiToggle"
+												enableSelectAll="false" expandFirstLevel="true"
+												visibleRowCount="5" cellClick="onCellClicked">
+												<table:columns>
+													<table:Column width="70%">
+														<Label text="Dimension" />
+														<table:template>
+															<Input value="{DimensionName}" type="Text"
+																textFormatMode="KeyValue" showSuggestion="false"
+																showValueHelp="{= ${IsCategory} === true ? false : true }"
+																editable="{= ${IsCategory} ===true ? false : true }"
+																valueHelpRequest="onValueHelpPress"
+																valueState="{path:'DimensionName', formatter:'com.sap.expenseplanning.util.Formatter.valuteState'}"
+																valueStateText="Please Enter Dimension" change="onDimensionTextChange">
+																<customData>
+																	<core:CustomData key="level" value="{level}" />
+																</customData>
+															</Input>
+														</table:template>
+													</table:Column>
+													<table:Column width="10%">
+														<Label text="Hierarchy Level" />
+														<table:template>
+															<ObjectIdentifier title="{level}"
+																titleActive="true" class="sapUiResponsiveMargin" />
+														</table:template>
+													</table:Column>
+													<table:Column width="20%">
+														<Label text="Action" />
+														<table:template>
 															<Toolbar>
-																<ToolbarSpacer />
-																<Button icon="sap-icon://up" press="onUpDimension" />
-																<Button icon="sap-icon://down" press="onDownDimension" />
+																<Button icon="sap-icon://add" tooltip="Add Child {height}"
+																	press="onAddChildDimensionButtonPress" enabled="{IsCategory}"
+																	visible="{IsCategory}" />
+																<Button icon="sap-icon://delete" tooltip="Remove"
+																	press="onRemoveButtonPress" />
+																<Button icon="sap-icon://up" press="onTreeTableUpDimension"
+																	visible="{IsCategory}" />
+																<Button icon="sap-icon://down" press="onTreeTableDownDimension"
+																	visible="{IsCategory}" />
 															</Toolbar>
-														</headerToolbar>
-													</List>
-												</l:BlockLayoutCell>
-											</l:BlockLayoutRow>
-										</l:BlockLayout>
-									</l:VerticalLayout>
+														</table:template>
+													</table:Column>
+												</table:columns>
+											</table:TreeTable>
+										</content>
+									</Panel>
+
+									<!-- -->
+									<l:BlockLayout background="{/selectedBackground}"
+										visible="false">
+										<l:BlockLayoutRow>
+											<l:BlockLayoutCell width="1"
+												title="Available Dimension">
+												<FlexBox>
+													<items>
+														<List id="idAvaiableDimensions2" noDataText="No Data"
+															mode="SingleSelectLeft"
+															items="{path:'dimension>/d/results', sorter:{path:'DimensionId'}}">
+															<items>
+																<DisplayListItem label="{dimension>DimensionName}"
+																	value="{dimension>DimensionDesc}" />
+															</items>
+															<layoutData>
+																<FlexItemData growFactor="10" />
+															</layoutData>
+														</List>
+														<FlexBox height="25%" direction="Column"
+															alignItems="Center" justifyContent="Center">
+															<items>
+																<Button icon="sap-icon://open-command-field"
+																	press="onAddDimension" ariaLabelledBy="editButtonLabel" />
+																<Button icon="sap-icon://close-command-field"
+																	press="onRemoveDimension" ariaLabelledBy="editButtonLabel" />
+															</items>
+															<layoutData>
+																<FlexItemData growFactor="2" />
+															</layoutData>
+														</FlexBox>
+													</items>
+												</FlexBox>
+											</l:BlockLayoutCell>
+											<l:BlockLayoutCell width="1"
+												title="Selected Dimension">
+												<List id="idTargetDimensions2" mode="SingleSelectMaster"
+													noDataText="No Data" items="{path:'/DimensionCollection'}">
+													<items>
+														<DisplayListItem label="{DimensionName}"
+															value="{level}" />
+													</items>
+													<headerToolbar>
+														<Toolbar>
+															<ToolbarSpacer />
+															<Button icon="sap-icon://up" press="onUpDimension" />
+															<Button icon="sap-icon://down" press="onDownDimension" />
+														</Toolbar>
+													</headerToolbar>
+												</List>
+
+											</l:BlockLayoutCell>
+										</l:BlockLayoutRow>
+									</l:BlockLayout>
+									<!-- </l:VerticalLayout> -->
+									<!-- <c:ProcessFlow id="idDimensionOrder" scrollable="false" wheelZoomable="false" 
+										visible="false" foldedCorners="true" nodePress="onNodePress" nodeTitlePress="onNodeTitlePress" 
+										nodes="{/DimensionCollection}" lanes="{/DimensionCollection}"> <c:nodes> 
+										<c:ProcessFlowNode laneId="{DimensionId}" nodeId="{DimensionId}" visible="false" 
+										title="{DimensionName}" state="Positive" texts="{DimensionName}" /> </c:nodes> 
+										<c:lanes> <c:ProcessFlowLaneHeader iconSrc="sap-icon://dimension" laneId="{DimensionId}" 
+										text="{DimensionName}" position="{path:'level', formatter:'com.sap.expenseplanning.util.Formatter.levelToLanesPosition'}" 
+										press="onLanePress"> </c:ProcessFlowLaneHeader> </c:lanes> </c:ProcessFlow> -->
 								</WizardStep>
 								<WizardStep id="SetDetailStep" validated="false"
-									activate="optionalStepActivation" title="Planning Detail">
+									activate="optionalStepActivation" title="Planning Structure">
 									<MessageStrip text="Elaboration" showIcon="true" />
 									<table:TreeTable id="idPlanning" rows="{path:'/Tree'}"
-										selectionMode="MultiToggle" enableSelectAll="false"
+										selectionMode="MultiToggle" enableSelectAll="false" visibleRowCount="5" 
 										expandFirstLevel="true" ariaLabelledBy="title" cellClick="onCellClicked">
 										<table:toolbar>
 											<Toolbar>
@@ -132,16 +252,14 @@
 											<table:Column width="30%">
 												<Label text="Dimension" />
 												<table:template>
-													<Input value="{text}" type="Text" textFormatMode="KeyValue"
-														placeholder="Enter Dimension ..." showSuggestion="false"
-														showValueHelp="{= ${level} > 0 ? true : false }" editable="{= ${level} > 0 ? true : false }"
-														valueHelpRequest="onValueHelpPress"
-														valueState="{path:'text', formatter:'com.sap.expenseplanning.util.Formatter.valuteState'}"
-														valueStateText="Please Enter Dimension">
-														<customData>
-															<core:CustomData key="level" value="{level}" />
-														</customData>
-													</Input>
+													<ObjectIdentifier title="{text}"
+														titleActive="true" />
+													<!-- <Input value="{text}" type="Text" textFormatMode="KeyValue" 
+														placeholder="Enter Dimension ..." showSuggestion="false" showValueHelp="{= 
+														${level} > 0 ? true : false }" editable="{= ${level} > 0 ? true : false }" 
+														valueHelpRequest="onValueHelpPress" valueState="{path:'text', formatter:'com.sap.expenseplanning.util.Formatter.valuteState'}" 
+														valueStateText="Please Enter Dimension"> <customData> <core:CustomData key="level" 
+														value="{level}" /> </customData> </Input> -->
 												</table:template>
 											</table:Column>
 											<table:Column width="30%">
@@ -152,7 +270,7 @@
 														valueState="{valueState}" valueStateText="{valueStateText}" />
 												</table:template>
 											</table:Column>
-											<table:Column width="15%">
+											<table:Column width="15%" visible="false">
 												<Label text="Action" />
 												<table:template>
 													<Toolbar>

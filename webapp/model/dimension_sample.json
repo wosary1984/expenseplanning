@@ -7,7 +7,7 @@
           "type": "cust.BO_ExpenseDimension"
         },
         "ObjectID": "00163E217B101ED786E7B648A3AB71D7",
-        "DimensionId": "F5957CDA1B3C11E7872D56000061AB61",
+        "DimensionId": "AREA",
         "DimensionDesc": "全国各地名称",
         "DimensionName": "地区",
         "IsMasterData": false,
@@ -21,7 +21,7 @@
           "type": "cust.BO_ExpenseDimension"
         },
         "ObjectID": "00163E217B101ED786E7BAD9792B31DB",
-        "DimensionId": "D8F74EC21B3D11E79B3856000061AB61",
+        "DimensionId": "CHANNEL",
         "DimensionDesc": "商品销售的渠道",
         "DimensionName": "渠道",
         "IsMasterData": false,
@@ -35,9 +35,9 @@
           "type": "cust.BO_ExpenseDimension"
         },
         "ObjectID": "00163E217B101EE786B9B4BC800BFE1E",
-        "DimensionId": "ID",
-        "DimensionDesc": "",
-        "DimensionName": "Dimentsion1",
+        "DimensionId": "PRODUCT",
+        "DimensionDesc": "产品",
+        "DimensionName": "产品",
         "IsMasterData": false,
         "MD_BOName": "",
         "MD_DescField": "",
