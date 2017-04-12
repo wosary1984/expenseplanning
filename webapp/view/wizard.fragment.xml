@@ -36,12 +36,10 @@
 											</customData>
 										</Input>
 										<!---->
-										<Label text="Company"/>
-										<Input value="{/company}"/>
+										<Label text="Plan Description"/>
+										<TextArea value="{/planningDesc}"/>
 										<Label text="Responseible Employee"/>
 										<Input value="{/employee}"/>
-										<Label text="Manager"/>
-										<Input value="{/manager}"/>
 										<Label text="Plan Amount" required="true"/>
 										<Input value="{/planningAmount}" required="true" type="Number">
 											<customData>
@@ -117,7 +115,7 @@
 													<table:Column width="70%">
 														<Label text="Dimension"/>
 														<table:template>
-															<Input value="{DimensionName}" type="Text" textFormatMode="KeyValue" showSuggestion="false"
+															<Input value="{DimensionId}({DimensionName})" type="Text" textFormatMode="KeyValue" showSuggestion="false"
 																showValueHelp="{= ${IsCategory} === true ? false : true }" editable="{= ${IsCategory} ===true ? false : true }"
 																valueHelpRequest="onValueHelpPress" valueState="{path:'DimensionName', formatter:'com.sap.expenseplanning.util.Formatter.valuteState'}"
 																valueStateText="Please Enter Dimension" change="onDimensionTextChange">

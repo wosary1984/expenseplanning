@@ -3,16 +3,14 @@
 	"endDate": "2017-10-01",
 	"planningName": "",
 	"planningId": "",
-	"company": "Almika",
 	"employee": "李明",
-	"manager": "王洪",
+	"planningDesc":"Plan Describetion",
 	"planningAmount": "100000",
 	"planningAmountCurrency": "CNY",
 	"validation": {
 		"Basic": false,
 		"SetDimension": false,
 		"SetDetail": false
-
 	},
 	"height": 0,
 	"DimensionCollection": [],
