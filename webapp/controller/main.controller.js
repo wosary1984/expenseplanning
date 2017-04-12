@@ -1,8 +1,9 @@
 jQuery.sap.require("com.sap.expenseplanning.util.Formatter");
 sap.ui.define([
 	"com/sap/expenseplanning/controller/BaseController",
-	"com/sap/expenseplanning/util/AjaxUtil"
-], function(BaseController, AjaxUtil) {
+	"com/sap/expenseplanning/util/AjaxUtil",
+	"com/sap/expenseplanning/util/Formatter"
+], function(BaseController, AjaxUtil, Formatter) {
 	"use strict";
 
 	return BaseController.extend("com.sap.expenseplanning.controller.main", {
@@ -12,7 +13,6 @@ sap.ui.define([
 		c4c_my500047_basic_destination: "C4C-my500047-BASIC",
 		c4c_service_destination: "SAP_CLOUD_EXT_SERVICE",
 		c4c_relative_path: "/sap/c4c/odata/cust/v1/c4cext/",
-
 		g_current_cell_context: null,
 		g_dimension_input_id: "",
 		g_filter: null,
@@ -103,8 +103,8 @@ sap.ui.define([
 					oTargetData.DimensionCollection.push({
 						DimensionName: object.DimensionName,
 						DimensionId: object.DimensionId,
-						IsMasterData: object.DimensionName,
-						DimensionDesc: object.IsMasterData,
+						IsMasterData: object.IsMasterData,
+						DimensionDesc: object.DimensionDesc,
 						MD_BOName: object.MD_BOName,
 						MD_DescField: object.MD_DescField,
 						MD_NameField: object.MD_NameField,
@@ -158,8 +158,8 @@ sap.ui.define([
 					oTargetData.d.results.push({
 						DimensionName: object.DimensionName,
 						DimensionId: object.DimensionId,
-						IsMasterData: object.DimensionName,
-						DimensionDesc: object.IsMasterData,
+						IsMasterData: object.IsMasterData,
+						DimensionDesc: object.DimensionDesc,
 						MD_BOName: object.MD_BOName,
 						MD_DescField: object.MD_DescField,
 						MD_NameField: object.MD_NameField
@@ -220,8 +220,8 @@ sap.ui.define([
 					oTargetData.d.results.push({
 						DimensionName: object.DimensionName,
 						DimensionId: object.DimensionId,
-						IsMasterData: object.DimensionName,
-						DimensionDesc: object.IsMasterData,
+						IsMasterData: object.IsMasterData,
+						DimensionDesc: object.DimensionDesc,
 						MD_BOName: object.MD_BOName,
 						MD_DescField: object.MD_DescField,
 						MD_NameField: object.MD_NameField
@@ -498,9 +498,13 @@ sap.ui.define([
 						} else {
 							child.planningAmount = iAverage;
 						}
+						var childDimension = dimensions[parent.level];
+						var childDimensionItem = childDimension.nodes[x];
 						child.parentAmount = parent.planningAmount;
-						child.text = dimensions[parent.level].nodes[x].DimensionName;
+						child.text = childDimensionItem.DimensionName;
 						child.Currency = parent.Currency;
+						child.DimensionId = childDimension.DimensionId;
+						child.DimensionItemRef = childDimensionItem.DimensionId;
 						child.level = parent.level + 1;
 						child.height = parent.height;
 						child.valueState = "None";
@@ -720,7 +724,13 @@ sap.ui.define([
 				var sDescription = oSelectedItem.getDescription();
 				var sTitle = oSelectedItem.getTitle();
 
-				oInput.setValue(sTitle + "(" + sDescription + ")");
+				var dataModel = oInput.getBindingContext().getObject();
+				dataModel.DimensionName = sDescription;
+				dataModel.DimensionId = sTitle;
+
+				oInput.getBindingContext().getModel().updateBindings();
+
+				// oInput.setValue(sTitle + "(" + sDescription + ")");
 
 				this._discardToSecondStep();
 			}
@@ -765,6 +775,64 @@ sap.ui.define([
 		onWizardReviewBack: function(oEvent) {
 			var oNavContainer = sap.ui.getCore().byId("wizardContainer");
 			oNavContainer.backToPage("wizardContentPage");
+		},
+
+		onWizardSubmit: function(oEvent) {
+			// get data model
+			var model = this._getDialog().getModel().getData();
+
+			// expense plan dimensions 
+			var expenseplan_dimensions = model.DimensionCollection.map(function(dimension) {
+				return {
+					DimensionID: dimension.DimensionId,
+					DimensionLevel: dimension.level
+				};
+			});
+
+			// expense plan nodes
+			var expenseplan_expensenode = Formatter.flatTree(model.Tree[0], expenseplan_dimensions);
+
+			// expense plan
+			var expenseplan_root = {
+				ExpensePlanId: model.planningId,
+				ExpensePlanName: model.planningName,
+				ExpensePlanDesc: model.planningDesc,
+				TotalBudget: {
+					currencyCode: model.planningAmountCurrency,
+					content: model.planningAmount
+				},
+				PlanStartDate: Formatter.oDateStr(model.startDate),
+				PlanEndDate: Formatter.oDateStr(model.endDate),
+				BO_ExpensePlanDemensions: expenseplan_dimensions,
+				BO_ExpensePlanExpenseNode: expenseplan_expensenode
+			};
+
+			// destination
+			var c4c_my500047_expenseplan_root = this.c4c_my500047_basic_destination + this.c4c_relative_path + "BO_ExpensePlanRootCollection";
+			var oList = this.getView().byId("c4c_data");
+			oList.setBusy(true);
+
+			// if client want to modify entity, client have to get csrf token first;
+			AjaxUtil.csrfToken(this, c4c_my500047_expenseplan_root, function(x_csrf_token) {
+				// get x_csrf_token finished
+				var postHeaders = {
+					"Accept": "application/json",
+					"X-CSRF-Token": x_csrf_token
+				};
+				// create explense plan
+				AjaxUtil.asyncPostWithHeader(this, c4c_my500047_expenseplan_root, expenseplan_root, postHeaders,
+					function(data, status, xhr) {
+						sap.m.MessageToast.show("saved");
+					},
+					function(xhr, status, err) {
+						sap.m.MessageToast.show("error" + err);
+					},
+					function() {
+						oList.setBusy(false);
+					});
+
+			});
+
 		},
 
 		onDimensionTextChange: function(oEvent) {
