@@ -19,5 +19,9 @@ com.sap.expenseplanning.util.Formatter = {
 			return (Number(level) - 1);
 		}
 
+	},
+	
+	oDateStr: function(dateStr) {
+		return "/Date(" + (new Date(dateStr)).getTime() + ")/";
 	}
 };

@@ -1,8 +1,9 @@
 jQuery.sap.require("com.sap.expenseplanning.util.Formatter");
 sap.ui.define([
 	"com/sap/expenseplanning/controller/BaseController",
-	"com/sap/expenseplanning/util/AjaxUtil"
-], function(BaseController, AjaxUtil) {
+	"com/sap/expenseplanning/util/AjaxUtil",
+	"com/sap/expenseplanning/util/Formatter"
+], function(BaseController, AjaxUtil, Formatter) {
 	"use strict";
 
 	return BaseController.extend("com.sap.expenseplanning.controller.main", {
@@ -12,7 +13,6 @@ sap.ui.define([
 		c4c_my500047_basic_destination: "C4C-my500047-BASIC",
 		c4c_service_destination: "SAP_CLOUD_EXT_SERVICE",
 		c4c_relative_path: "/sap/c4c/odata/cust/v1/c4cext/",
-
 		g_current_cell_context: null,
 		g_dimension_input_id: "",
 		g_filter: null,
@@ -765,6 +765,56 @@ sap.ui.define([
 		onWizardReviewBack: function(oEvent) {
 			var oNavContainer = sap.ui.getCore().byId("wizardContainer");
 			oNavContainer.backToPage("wizardContentPage");
+		},
+
+		onWizardSubmit: function(oEvent) {
+			// get data model
+			var model = this._getDialog().getModel().getData();
+
+			// need to be fillter
+			var expenseplan_dimensions = model.DimensionCollection;
+
+			// consturct post payload
+			var expenseplan_root = {
+				ExpensePlanId: model.planningId,
+				ExpensePlanName: model.planningName,
+				TotalBudget: {
+					currencyCode: model.planningAmountCurrency,
+					content: model.planningAmount
+				},
+				PlanStartDate: Formatter.oDateStr(model.startDate),
+				PlanEndDate: Formatter.oDateStr(model.endDate),
+				BO_ExpensePlanDemensions: [],
+				BO_ExpensePlanExpenseNode: []
+			};
+
+			var c4c_my500047_expenseplan_root = this.c4c_my500047_basic_destination + this.c4c_relative_path + "BO_ExpensePlanRootCollection";
+			var c4c_my500047_expenseplan_dimensions = this.c4c_my500047_basic_destination + this.c4c_relative_path +
+				"BO_ExpensePlanDemensionsCollection";
+			var oList = this.getView().byId("c4c_data");
+			oList.setBusy(true);
+			// if i want to create entity, client have to get csrf token first;
+			AjaxUtil.csrfToken(this, c4c_my500047_expenseplan_root, function(x_csrf_token) {
+				// get x_csrf_token finished
+				var postHeaders = {
+					"Accept": "application/json",
+					"X-CSRF-Token": x_csrf_token
+				};
+				// create explense plan
+				AjaxUtil.asyncPostWithHeader(this, c4c_my500047_expenseplan_root, expenseplan_root, postHeaders,
+					function(data, status, xhr) {
+						var tmp = data;
+						var expenseplan_id = data.d.results.ObjectId;
+					},
+					function(xhr, status, err) {
+						var tmp = status;
+					},
+					function() {
+						oList.setBusy(false);
+					});
+
+			});
+
 		},
 
 		onDimensionTextChange: function(oEvent) {
