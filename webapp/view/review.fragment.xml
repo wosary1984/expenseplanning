@@ -3,7 +3,7 @@
 	xmlns:core="sap.ui.core" xmlns="sap.m">
 	<Page id="wizardReviewPage" binding="{/}" showHeader="false">
 		<content>
-			<form:SimpleForm title="1. Expense Planning Basic Information"
+			<form:SimpleForm title="Expense Planning Basic Information"
 				minWidth="1024" editable="false" layout="ResponsiveGridLayout">
 				<form:content>
 					<Label text="Plan Id" design="Bold" />

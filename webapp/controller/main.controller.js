@@ -606,6 +606,7 @@ sap.ui.define([
 				}
 				object.nodes.push(child);
 				this.g_current_cell_context.getModel().updateBindings();
+				sap.ui.getCore().byId("idTargetDimensions").expandToLevel(1);
 			}
 		},
 
@@ -625,6 +626,7 @@ sap.ui.define([
 				object.nodes.push(child);
 				this.g_current_cell_context.getModel().updateBindings();
 				this._discardToSecondStep();
+				
 			}
 		},
 
@@ -730,8 +732,6 @@ sap.ui.define([
 
 				oInput.getBindingContext().getModel().updateBindings();
 
-				// oInput.setValue(sTitle + "(" + sDescription + ")");
-
 				this._discardToSecondStep();
 			}
 			oEvent.getSource().getBinding("items").filter([]);
@@ -778,9 +778,12 @@ sap.ui.define([
 		},
 
 		onWizardSubmit: function(oEvent) {
+			// show busy indicator
+			sap.ui.core.BusyIndicator.show();
+			// this dialog
+			var thisDialog = this._getDialog();
 			// get data model
-			var model = this._getDialog().getModel().getData();
-
+			var model = thisDialog.getModel().getData();
 			// expense plan dimensions 
 			var expenseplan_dimensions = model.DimensionCollection.map(function(dimension) {
 				return {
@@ -788,10 +791,8 @@ sap.ui.define([
 					DimensionLevel: dimension.level
 				};
 			});
-
 			// expense plan nodes
 			var expenseplan_expensenode = Formatter.flatTree(model.Tree[0], expenseplan_dimensions);
-
 			// expense plan
 			var expenseplan_root = {
 				ExpensePlanId: model.planningId,
@@ -806,12 +807,10 @@ sap.ui.define([
 				BO_ExpensePlanDemensions: expenseplan_dimensions,
 				BO_ExpensePlanExpenseNode: expenseplan_expensenode
 			};
-
 			// destination
 			var c4c_my500047_expenseplan_root = this.c4c_my500047_basic_destination + this.c4c_relative_path + "BO_ExpensePlanRootCollection";
 			var oList = this.getView().byId("c4c_data");
 			oList.setBusy(true);
-
 			// if client want to modify entity, client have to get csrf token first;
 			AjaxUtil.csrfToken(this, c4c_my500047_expenseplan_root, function(x_csrf_token) {
 				// get x_csrf_token finished
@@ -823,23 +822,52 @@ sap.ui.define([
 				AjaxUtil.asyncPostWithHeader(this, c4c_my500047_expenseplan_root, expenseplan_root, postHeaders,
 					function(data, status, xhr) {
 						sap.m.MessageToast.show("saved");
+						// try to close wizard dialog
+						thisDialog.close();
 					},
 					function(xhr, status, err) {
-						sap.m.MessageToast.show("error" + err);
+						sap.m.MessageToast.show("error:" + err);
 					},
 					function() {
+						// hide global busy indicator
+						sap.ui.core.BusyIndicator.hide();
 						oList.setBusy(false);
 					});
-
 			});
-
 		},
 
 		onDimensionTextChange: function(oEvent) {
 			this._discardToSecondStep();
 		},
 
-		onTitlePressed: function(oEvent) {}
+		onTitlePressed: function(oEvent) {},
+
+		onMainViewItemPress: function(oEvent) {
+			var bindingObject = oEvent.getSource().getBindingContext().getObject();
+			var expensePlanInfo = sap.ui.xmlfragment("com.sap.expenseplanning.view.expensePlanInfo", this);
+			sap.ui.core.BusyIndicator.show();
+			var sUrl = this.c4c_my500047_basic_destination + this.c4c_relative_path +
+				"BO_ExpensePlanRootCollection('" + bindingObject.ObjectID +
+				"')?$format=json&$expand=BO_ExpensePlanDemensions,BO_ExpensePlanExpenseNode";
+			var oModel = new sap.ui.model.json.JSONModel();
+			AjaxUtil.asynchGetJSON(this, sUrl,
+				function(r) {
+					var data = r.d.results;
+					data.Tree = [];
+					data.Tree.push(Formatter.reConstructTree(data.BO_ExpensePlanExpenseNode));
+					oModel.setData(data);
+				},
+				undefined,
+				function() {
+					sap.ui.core.BusyIndicator.hide();
+					expensePlanInfo.setModel(oModel);
+					expensePlanInfo.open();
+				});
+
+			// how to set model ? 
+			this.getView().addDependent(expensePlanInfo);
+			jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), expensePlanInfo);
+		}
 
 	});
 });

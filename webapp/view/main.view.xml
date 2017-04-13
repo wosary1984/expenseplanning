@@ -14,7 +14,7 @@
 							</Toolbar>
 						</headerToolbar>
 						<items>
-							<ObjectListItem title="Plan Id: {ExpensePlanId}" intro ="Plan Name: {ExpensePlanName}" type="Active" 
+							<ObjectListItem title="Plan Id: {ExpensePlanId}" press="onMainViewItemPress" intro="Plan Name: {ExpensePlanName}" type="Active"
 								number="{ parts:[{path:'TotalBudget/content'},{path:'TotalBudget/currencyCode'}], type: 'sap.ui.model.type.Currency', formatOptions: {showMeasure: false} }"
 								numberUnit="{TotalBudget/currencyCode}">
 								<attributes>
