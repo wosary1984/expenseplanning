@@ -606,7 +606,6 @@ sap.ui.define([
 				}
 				object.nodes.push(child);
 				this.g_current_cell_context.getModel().updateBindings();
-				sap.ui.getCore().byId("idTargetDimensions").expandToLevel(1);
 			}
 		},
 
@@ -626,7 +625,7 @@ sap.ui.define([
 				object.nodes.push(child);
 				this.g_current_cell_context.getModel().updateBindings();
 				this._discardToSecondStep();
-				
+				sap.ui.getCore().byId("idTargetDimensions").expandToLevel(1);
 			}
 		},
 
@@ -853,8 +852,13 @@ sap.ui.define([
 			AjaxUtil.asynchGetJSON(this, sUrl,
 				function(r) {
 					var data = r.d.results;
-					data.Tree = [];
-					data.Tree.push(Formatter.reConstructTree(data.BO_ExpensePlanExpenseNode));
+					var Tree = [];
+					Tree.push(Formatter.reConstructTree(data.BO_ExpensePlanExpenseNode));
+					// use to view the tree root node
+					Tree[0].PlanningExpenseContent = data.TotalBudget.content;
+					Tree[0].PlanningExpenseCurrencyCode = data.TotalBudget.currencyCode;
+					Tree[0].Name = data.ExpensePlanName;
+					data.Tree = Tree;
 					oModel.setData(data);
 				},
 				undefined,

@@ -12,9 +12,9 @@
 						<Label text="Plan Desc" design="Bold"/>
 						<Text text="{/ExpensePlanDesc}"/>
 						<Label text="Start Date" design="Bold"/>
-						<Text text="{/PlanStartDate}"/>
+						<Text text="{path:'/PlanStartDate', formatter:'com.sap.expenseplanning.util.Formatter.oTimeStamp2Date'}"/>
 						<Label text="End Date" design="Bold"/>
-						<Text text="{/PlanEndDate}"/>
+						<Text text="{path:'/PlanEndDate', formatter:'com.sap.expenseplanning.util.Formatter.oTimeStamp2Date'}"/>
 						<Label text="Responseible Employee" design="Bold"/>
 						<Text text="{/EmployeeID}"/>
 						<Label text="Plan Amount" design="Bold"/>
@@ -35,11 +35,28 @@
 				<form:SimpleForm title="Expense Planning Structure" minWidth="1024" editable="false" layout="ResponsiveGridLayout">
 					<form:content>
 						<Label text="Planning Structure" design="Bold"/>
-						<Tree items="{path: '/Tree'}">
-							<items>
-								<StandardTreeItem title="{text}: {TotalAmount/content} {TotalAmount/currencyCode}" icon="sap-icon://customer-financial-fact-sheet"/>
-							</items>
-						</Tree>
+						<table:TreeTable rows="{path: '/Tree', parameters: {'arrayNames': ['nodes']}}">
+							<table:columns>
+								<table:Column>
+									<table:template>
+										<Label text="Name"/>
+										<Text text="{Name}"/>
+									</table:template>
+								</table:Column>
+								<table:Column>
+									<table:template>
+										<Label text="PlanningExpense"/>
+										<Text text="{PlanningExpenseContent}"/>
+									</table:template>
+								</table:Column>
+								<table:Column>
+									<table:template>
+										<Label text="Currency"/>
+										<Text text="{PlanningExpenseCurrencyCode}"/>
+									</table:template>
+								</table:Column>
+							</table:columns>
+						</table:TreeTable>
 					</form:content>
 				</form:SimpleForm>
 			</content>

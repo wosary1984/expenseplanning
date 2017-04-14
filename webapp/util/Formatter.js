@@ -70,7 +70,7 @@ com.sap.expenseplanning.util.Formatter = {
 				return;
 			}
 		}
-		addNodes(tree.nodes, -1);
+		addNodes(tree.nodes, "");
 		return res;
 	},
 
@@ -85,8 +85,21 @@ com.sap.expenseplanning.util.Formatter = {
 			return pre;
 		}, {});
 		// construct tree
-		expenseNodes.forEach(function(node) {
-			if (node.ParentExpenseNodeId > -1) {
+		Object.values(dataMap).forEach(function(node) {
+			// flat Amount structure
+			node.PlanedExpenseContent = node.PlanedExpense.content;
+			node.PlanedExpenseCurrencyCode = node.PlanedExpense.currencyCode;
+			node.PlanningExpenseContent = node.PlanningExpense.content;
+			node.PlanningExpenseCurrencyCode = node.PlanningExpense.currencyCode;
+			node.UsedExpenseContent = node.UsedExpense.content;
+			node.UsedExpenseCurrencyCode = node.UsedExpense.currencyCode;
+			delete node.PlanedExpense;
+			delete node.PlanningExpense;
+			delete node.UsedExpense;
+			delete node.BO_ExpensePlanRoot;
+			delete node.__metadata;
+			// flated 
+			if (node.ParentExpenseNodeId) {
 				var parentNode = dataMap[node.ParentExpenseNodeId];
 				parentNode.nodes = parentNode.nodes || [];
 				parentNode.nodes.push(node);
