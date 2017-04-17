@@ -34,15 +34,16 @@ com.sap.expenseplanning.util.Formatter = {
 		return result;
 	},
 
-	flatTree: function(tree, dimensions) {
+	flatTree: function(tree) {
 		var res = [];
 		var simpleId = -1;
 
-		function addNodes(entry, parentId) {
+		function addNodes(entry, parent) {
 			if (entry && entry.length > 0) {
 				entry.forEach(function(node) {
 					var nodeId = ++simpleId;
-					res.push({
+					// this item fields will be used in its children
+					var node_item = {
 						NodeLevel: node.level,
 						PlanningExpense: {
 							currencyCode: node.Currency,
@@ -51,18 +52,23 @@ com.sap.expenseplanning.util.Formatter = {
 						PlanedExpense: {
 							currencyCode: node.Currency
 						},
+						// this is a bo Misspell;
+						TreeHighet: node.height,
+						// if node have nodes field ,and nodes field have content, will give false(not leaf)
+						IsLeaf: node.nodes ? node.nodes < 1 : true,
 						UsedExpense: {
 							currencyCode: node.Currency
 						},
 						DimensionID: node.DimensionId,
 						DimensionItemRef: node.DimensionItemRef,
-						Name: node.text,
-						ExpenseNodeId: "" + simpleId,
-						ParentExpenseNodeId: "" + parentId
-					});
+						Name: (parent && (parent.Name + "-") || "") + node.text,
+						ExpenseNodeId: "" + nodeId,
+						ParentExpenseNodeId: (parent && parent.ExpenseNodeId) || ""
+					};
+					res.push(node_item);
 					// Recursively add nodes
 					if (node.nodes)
-						addNodes(node.nodes, nodeId);
+						addNodes(node.nodes, node_item);
 				});
 				return;
 			} else {
@@ -70,43 +76,86 @@ com.sap.expenseplanning.util.Formatter = {
 				return;
 			}
 		}
-		addNodes(tree.nodes, "");
+		addNodes(tree.nodes);
 		return res;
 	},
 
-	reConstructTree: function(expenseNodes) {
+	reConstructTree: function(expensePlanWithExpandInfo) {
+
+		// this function is used to constrcut a hirerachy Tree, from flat nodes
+
+		// please make sure field of expenseplannode is correct
+		var expenseNodes = expensePlanWithExpandInfo.BO_ExpensePlanExpenseNode;
+
+		expensePlanWithExpandInfo.nodes = [];
 		// result
-		var Tree = {
-			nodes: []
-		};
-		// use this map to retrive node by id
-		var dataMap = expenseNodes.reduce(function(pre, cur) {
-			pre[cur.ExpenseNodeId] = cur;
-			return pre;
-		}, {});
-		// construct tree
-		Object.values(dataMap).forEach(function(node) {
-			// flat Amount structure
-			node.PlanedExpenseContent = node.PlanedExpense.content;
-			node.PlanedExpenseCurrencyCode = node.PlanedExpense.currencyCode;
-			node.PlanningExpenseContent = node.PlanningExpense.content;
-			node.PlanningExpenseCurrencyCode = node.PlanningExpense.currencyCode;
-			node.UsedExpenseContent = node.UsedExpense.content;
-			node.UsedExpenseCurrencyCode = node.UsedExpense.currencyCode;
-			delete node.PlanedExpense;
-			delete node.PlanningExpense;
-			delete node.UsedExpense;
-			delete node.BO_ExpensePlanRoot;
-			delete node.__metadata;
-			// flated 
-			if (node.ParentExpenseNodeId) {
-				var parentNode = dataMap[node.ParentExpenseNodeId];
-				parentNode.nodes = parentNode.nodes || [];
-				parentNode.nodes.push(node);
-			} else {
-				Tree.nodes.push(node);
-			}
-		});
+		var Tree = expensePlanWithExpandInfo;
+
+		if (expenseNodes) {
+			// use this map to retrive node by id
+			var dataMap = expenseNodes.reduce(function(pre, cur) {
+				pre[cur.ExpenseNodeId] = cur;
+				return pre;
+			}, {});
+			// construct tree
+			Object.values(dataMap).forEach(function(node) {
+				if (node.ParentExpenseNodeId) {
+					var parentNode = dataMap[node.ParentExpenseNodeId];
+					parentNode.nodes = parentNode.nodes || [];
+					parentNode.nodes.push(node);
+				} else {
+					Tree.nodes.push(node);
+				}
+			});
+		}
+
+		// FormatTreeExpenseInfo
+		Tree.PlanningExpense = Tree.TotalBudget;
+		Tree.Name = expensePlanWithExpandInfo.ExpensePlanName;
+		// refresh this tree expense info 
+		this.calculateTreeExpense(Tree);
 		return Tree;
+	},
+
+	calculateTreeExpense: function(root) {
+
+		// this function use to refresh the planning/planed/used field of each node
+
+		var strNumAdd = function(a, b) {
+			var decimalPlaces = 6;
+			return (parseFloat(a) + parseFloat(b)).toFixed(decimalPlaces);
+		};
+
+		var updateParentNodeExpense = function(node, parent) {
+			// update currnet node expense use info firstly
+			// if node is leaf node, will skip this process
+			if (node.nodes) {
+				node.nodes.forEach(function(child) {
+					updateParentNodeExpense(child, node);
+				});
+			}
+			// update expense usage info of the parent of currnet node
+			if (parent) {
+				// planning expense should not be fixed
+				parent.UsedExpense.content = strNumAdd(parent.UsedExpense.content, node.UsedExpense.content);
+				parent.PlanedExpense.content = strNumAdd(parent.PlanedExpense.content, node.PlanedExpense.content);
+			}
+		};
+
+		if (root && root.nodes) {
+			// make sure Integrity, these fields are also used in expenseinfo view
+			root.PlanningExpense = root.PlanningExpense || root.TotalBudget;
+			root.PlanedExpense = root.PlanedExpense || {
+				content: "0.0",
+				currencyCode: root.TotalBudget.currencyCode
+			};
+			root.UsedExpense = root.UsedExpense || {
+				content: "0.0",
+				currencyCode: root.TotalBudget.currencyCode
+			};
+			updateParentNodeExpense(root);
+		}
+
 	}
+
 };

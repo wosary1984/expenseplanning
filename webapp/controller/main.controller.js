@@ -853,11 +853,8 @@ sap.ui.define([
 				function(r) {
 					var data = r.d.results;
 					var Tree = [];
-					Tree.push(Formatter.reConstructTree(data.BO_ExpensePlanExpenseNode));
+					Tree.push(Formatter.reConstructTree(data));
 					// use to view the tree root node
-					Tree[0].PlanningExpenseContent = data.TotalBudget.content;
-					Tree[0].PlanningExpenseCurrencyCode = data.TotalBudget.currencyCode;
-					Tree[0].Name = data.ExpensePlanName;
 					data.Tree = Tree;
 					oModel.setData(data);
 				},

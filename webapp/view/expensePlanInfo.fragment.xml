@@ -38,21 +38,28 @@
 						<table:TreeTable rows="{path: '/Tree', parameters: {'arrayNames': ['nodes']}}">
 							<table:columns>
 								<table:Column>
+									<Label text="Node Name"/>
 									<table:template>
 										<Label text="Name"/>
 										<Text text="{Name}"/>
 									</table:template>
 								</table:Column>
 								<table:Column>
+									<Label text="PlanningExpense"/>
 									<table:template>
-										<Label text="PlanningExpense"/>
-										<Text text="{PlanningExpenseContent}"/>
+										<Text text="{PlanningExpense/content} {PlanningExpense/currencyCode}"/>
 									</table:template>
 								</table:Column>
 								<table:Column>
+									<Label text="PlanedExpense"/>
 									<table:template>
-										<Label text="Currency"/>
-										<Text text="{PlanningExpenseCurrencyCode}"/>
+										<Text text="{PlanedExpense/content} {PlanedExpense/currencyCode}"/>
+									</table:template>
+								</table:Column>
+								<table:Column>
+									<Label text="UsedExpense"/>
+									<table:template>
+										<Text text="{UsedExpense/content} {UsedExpense/currencyCode}"/>
 									</table:template>
 								</table:Column>
 							</table:columns>
