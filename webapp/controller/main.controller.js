@@ -777,10 +777,10 @@ sap.ui.define([
 		},
 
 		onWizardSubmit: function(oEvent) {
-			// show busy indicator
-			sap.ui.core.BusyIndicator.show();
 			// this dialog
 			var thisDialog = this._getDialog();
+
+			var self = this;
 			// get data model
 			var model = thisDialog.getModel().getData();
 			// expense plan dimensions 
@@ -794,6 +794,7 @@ sap.ui.define([
 			var expenseplan_expensenode = Formatter.flatTree(model.Tree[0], expenseplan_dimensions);
 			// expense plan
 			var expenseplan_root = {
+				Activation: model.Activation,
 				ExpensePlanId: model.planningId,
 				ExpensePlanName: model.planningName,
 				ExpensePlanDesc: model.planningDesc,
@@ -801,6 +802,7 @@ sap.ui.define([
 					currencyCode: model.planningAmountCurrency,
 					content: model.planningAmount
 				},
+				EmployeeID: model.EmployeeID,
 				PlanStartDate: Formatter.oDateStr(model.startDate),
 				PlanEndDate: Formatter.oDateStr(model.endDate),
 				BO_ExpensePlanDemensions: expenseplan_dimensions,
@@ -808,8 +810,7 @@ sap.ui.define([
 			};
 			// destination
 			var c4c_my500047_expenseplan_root = this.c4c_my500047_basic_destination + this.c4c_relative_path + "BO_ExpensePlanRootCollection";
-			var oList = this.getView().byId("c4c_data");
-			oList.setBusy(true);
+			thisDialog.setBusy(true);
 			// if client want to modify entity, client have to get csrf token first;
 			AjaxUtil.csrfToken(this, c4c_my500047_expenseplan_root, function(x_csrf_token) {
 				// get x_csrf_token finished
@@ -823,14 +824,18 @@ sap.ui.define([
 						sap.m.MessageToast.show("saved");
 						// try to close wizard dialog
 						thisDialog.close();
+						// use this lines set dialog to init status 
+						var oNavContainer = sap.ui.getCore().byId("wizardContainer");
+						oNavContainer.backToPage("wizardContentPage");
+						self.initFunction();
+						// finished
 					},
 					function(xhr, status, err) {
 						sap.m.MessageToast.show("error:" + err);
 					},
 					function() {
 						// hide global busy indicator
-						sap.ui.core.BusyIndicator.hide();
-						oList.setBusy(false);
+						thisDialog.setBusy(false);
 					});
 			});
 		},
@@ -844,6 +849,7 @@ sap.ui.define([
 		onMainViewItemPress: function(oEvent) {
 			var bindingObject = oEvent.getSource().getBindingContext().getObject();
 			var expensePlanInfo = sap.ui.xmlfragment("com.sap.expenseplanning.view.expensePlanInfo", this);
+			this.expensePlanInfoDialog = expensePlanInfo;
 			sap.ui.core.BusyIndicator.show();
 			var sUrl = this.c4c_my500047_basic_destination + this.c4c_relative_path +
 				"BO_ExpensePlanRootCollection('" + bindingObject.ObjectID +
@@ -868,7 +874,124 @@ sap.ui.define([
 			// how to set model ? 
 			this.getView().addDependent(expensePlanInfo);
 			jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), expensePlanInfo);
-		}
+		},
 
+		onPlanInfoClose: function(oEvent) {
+			this.expensePlanInfoDialog.close();
+		},
+
+		onEmployeeValueHelp: function(oEvent) {
+			// following codes works, but need to be Reconstruction
+			var employee_uri = this.c4c_my500047_basic_destination + "/sap/c4c/odata/v1/c4codata/EmployeeCollection?$format=json";
+			var createDialog = this._getDialog();
+
+			var oValueHelpDialog = new sap.ui.comp.valuehelpdialog.ValueHelpDialog({
+				title: "Employee",
+				supportMultiselect: false,
+				supportRanges: false,
+				key: "EmployeeID",
+				descriptionKey: "SortingName",
+				supportRangesOnly: false,
+				stretch: sap.ui.Device.system.phone,
+
+				ok: function(oControlEvent) {
+					var id = oControlEvent.getParameter("tokens")[0].getKey();
+					var desc = oControlEvent.getParameter("tokens")[0].getText();
+					var createDialogModel = createDialog.getModel();
+					var createDialogModelData = createDialogModel.getData();
+					createDialogModelData.EmployeeID = id;
+					createDialogModelData.employee = desc;
+					createDialogModel.updateBindings();
+					oValueHelpDialog.close();
+				},
+
+				cancel: function(oControlEvent) {
+
+					oValueHelpDialog.close();
+				},
+
+				afterClose: function() {
+					oValueHelpDialog.destroy();
+				}
+			});
+
+			var oFilterBar = new sap.ui.comp.filterbar.FilterBar({
+				advancedMode: false,
+				filterBarExpanded: false,
+				showGoOnFB: !sap.ui.Device.system.phone,
+				search: function(event) {
+					var searchKey = sap.ui.getCore().byId(event.getSource().getBasicSearch()).getValue();
+					var employee_uri_search = employee_uri + "&$search=" + searchKey;
+					oValueHelpDialog.setBusy(true);
+					AjaxUtil.asynchGetJSON(this, employee_uri_search,
+						function(r) {
+							var data = r.d.results;
+							var newModel = new sap.ui.model.json.JSONModel();
+							newModel.setData(data);
+							oValueHelpDialog.getTable().setModel(newModel);
+
+							var oColModel = new sap.ui.model.json.JSONModel();
+							oColModel.setData({
+								cols: [{
+									label: "Employee ID",
+									template: "EmployeeID"
+								}, {
+									label: "Sorting Name",
+									template: "SortingName"
+								}, {
+									label: "Nick Name",
+									template: "NickName",
+									demandPopin: true
+								}]
+							});
+
+							oValueHelpDialog.getTable().setModel(oColModel, "columns");
+
+							if (oValueHelpDialog.getTable().bindRows) {
+								oValueHelpDialog.getTable().bindRows("/");
+							}
+							if (oValueHelpDialog.getTable().bindItems) {
+								var oTable = oValueHelpDialog.getTable();
+
+								oTable.bindAggregation("items", "/", function(sId, oContext) {
+									var aCols = oTable.getModel("columns").getData().cols;
+
+									return new sap.m.ColumnListItem({
+										cells: aCols.map(function(column) {
+											var colname = column.template;
+											return new sap.m.Label({
+												text: "{" + colname + "}"
+											});
+										})
+									});
+								});
+							}
+						},
+						function() {
+							sap.m.MessageToast.show("fetch data error");
+						},
+						function() {
+							oValueHelpDialog.setBusy(false);
+						});
+
+				}
+			});
+			if (oFilterBar.setBasicSearch) {
+				oFilterBar.setBasicSearch(new sap.m.SearchField({
+					showSearchButton: sap.ui.Device.system.phone,
+					placeholder: "Search",
+					search: function(event) {
+						oValueHelpDialog.getFilterBar().search();
+					}
+				}));
+			}
+			oValueHelpDialog.setFilterBar(oFilterBar);
+
+			oValueHelpDialog.addStyleClass("sapUiSizeCompact");
+
+			oValueHelpDialog.open();
+
+			sap.m.MessageToast.show("fill and search an employee");
+		}
 	});
 });

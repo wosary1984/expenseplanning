@@ -39,7 +39,7 @@
 										<Label text="Plan Description"/>
 										<TextArea value="{/planningDesc}"/>
 										<Label text="Responseible Employee"/>
-										<Input value="{/employee}"/>
+										<Input value="{/employee}" valueHelpRequest="onEmployeeValueHelp" showValueHelp="true"/>
 										<Label text="Plan Amount" required="true"/>
 										<Input value="{/planningAmount}" required="true" type="Number">
 											<customData>
@@ -52,6 +52,8 @@
 												<core:CustomData key="validation" value="NOT_NULL"/>
 											</customData>
 										</Input>
+										<Label text="Activation"/>
+										<CheckBox selected="{/Activation}"/>
 									</form:SimpleForm>
 								</WizardStep>
 								<!--Indicates whether or not the step is validated. When a step is 

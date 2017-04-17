@@ -4,9 +4,11 @@
 	"planningName": "",
 	"planningId": "",
 	"employee": "李明",
-	"planningDesc":"Plan Describetion",
+	"EmployeeID": "",
+	"planningDesc": "Plan Describetion",
 	"planningAmount": "100000",
 	"planningAmountCurrency": "CNY",
+	"Activation": true,
 	"validation": {
 		"Basic": false,
 		"SetDimension": false,

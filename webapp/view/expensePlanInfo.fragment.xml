@@ -3,7 +3,7 @@
 	<Dialog title="Expense Plan {ExpensePlanName}" binding="{/}" contentWidth="80%" contentHeight="80%" draggable="false" resizable="false">
 		<Page>
 			<content>
-				<form:SimpleForm title="1. Expense Planning Basic Information" minWidth="1024" editable="false" layout="ResponsiveGridLayout">
+				<form:SimpleForm title="Expense Planning Basic Information" minWidth="1024" editable="false" layout="ResponsiveGridLayout">
 					<form:content>
 						<Label text="Plan Id" design="Bold"/>
 						<Text text="{/ExpensePlanId}"/>
@@ -18,9 +18,9 @@
 						<Label text="Responseible Employee" design="Bold"/>
 						<Text text="{/EmployeeID}"/>
 						<Label text="Plan Amount" design="Bold"/>
-						<Text text="{/TotalBudget/content}"/>
-						<Label text="Plan Amount Currency" design="Bold"/>
-						<Text text="{/TotalBudget/currencyCode}"/>
+						<Text text="{/TotalBudget/content} {/TotalBudget/currencyCode}"/>
+						<Label text="Activation" design="Bold"/>
+						<Text text="{/Activation}"/>
 					</form:content>
 				</form:SimpleForm>
 				<form:SimpleForm title="Expense Planning Dimensions" minWidth="1024" editable="false" layout="ResponsiveGridLayout">
