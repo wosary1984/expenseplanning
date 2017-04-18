@@ -853,7 +853,7 @@ sap.ui.define([
 			sap.ui.core.BusyIndicator.show();
 			var sUrl = this.c4c_my500047_basic_destination + this.c4c_relative_path +
 				"BO_ExpensePlanRootCollection('" + bindingObject.ObjectID +
-				"')?$format=json&$expand=BO_ExpensePlanDemensions,BO_ExpensePlanExpenseNode";
+				"')?$expand=BO_ExpensePlanDemensions,BO_ExpensePlanExpenseNode,Employee/EmployeeCommon&$format=json";
 			var oModel = new sap.ui.model.json.JSONModel();
 			AjaxUtil.asynchGetJSON(this, sUrl,
 				function(r) {
@@ -991,7 +991,7 @@ sap.ui.define([
 
 			oValueHelpDialog.open();
 
-			sap.m.MessageToast.show("fill and search an employee");
+			sap.m.MessageToast.show("Fill search box and search an employee");
 		}
 	});
 });

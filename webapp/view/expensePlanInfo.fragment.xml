@@ -16,7 +16,7 @@
 						<Label text="End Date" design="Bold"/>
 						<Text text="{path:'/PlanEndDate', formatter:'com.sap.expenseplanning.util.Formatter.oTimeStamp2Date'}"/>
 						<Label text="Responseible Employee" design="Bold"/>
-						<Text text="{/EmployeeID}"/>
+						<Text text="{Employee/EmployeeCommon/0/SortingFormattedName} {/EmployeeID}"/>
 						<Label text="Plan Amount" design="Bold"/>
 						<Text text="{/TotalBudget/content} {/TotalBudget/currencyCode}"/>
 						<Label text="Activation" design="Bold"/>
@@ -35,7 +35,7 @@
 				<form:SimpleForm title="Expense Planning Structure" minWidth="1024" editable="false" layout="ResponsiveGridLayout">
 					<form:content>
 						<Label text="Planning Structure" design="Bold"/>
-						<table:TreeTable rows="{path: '/Tree', parameters: {'arrayNames': ['nodes']}}">
+						<table:TreeTable selectionMode="None" rows="{path: '/Tree', parameters: {'arrayNames': ['nodes']}}">
 							<table:columns>
 								<table:Column>
 									<Label text="Node Name"/>
