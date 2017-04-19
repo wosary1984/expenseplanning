@@ -635,8 +635,9 @@ sap.ui.define([
 		},
 
 		onValueHelpPress: function(oEvent) {
-
-			this.g_dimension_input_id = oEvent.getSource().getId();
+			var dimension_input_id = oEvent.getSource().getId();
+			var self = this;
+			this.g_dimension_input_id = dimension_input_id;
 
 			var oSource = oEvent.getSource();
 			var oCustData = oSource.getCustomData();
@@ -659,36 +660,116 @@ sap.ui.define([
 					"BO_ExpenseDimensionItemRootCollection?$format=json";
 				var oModel = this._oValueHelpDialog.getModel();
 
-				if (oModel) {
-					this.g_filter = new sap.ui.model.Filter("DimensionTypeID", sap.ui.model.FilterOperator.EQ, dimension.DimensionId);
-					oModel.updateBindings();
-					this._oValueHelpDialog.getBinding("items").filter([this.g_filter]);
-
+				// following code are written by different developers, so wrap by 'if else'
+				if (dimension && dimension.IsMasterData) {
+					// if dimension is master data, following code will run
+					var resource_uri = this.c4c_my500047_basic_destination + "/sap/c4c/odata/v1/c4codata/" + dimension.MD_BOName +
+						"Collection?$format=json";
+					var refreshData = function(uri, dialog) {
+						// dialog.setBusy(true);
+						// setBusy not works correct in this dialog
+						sap.ui.core.BusyIndicator.show(0);
+						AjaxUtil.asynchGetJSON(self, uri,
+							function(r) {
+								var data = r.d.results;
+								var columnsInfo = [{
+									label: dimension.MD_NameField,
+									template: dimension.MD_NameField
+								}, {
+									label: dimension.MD_DescField,
+									template: dimension.MD_DescField
+								}];
+								var newModel = new sap.ui.model.json.JSONModel();
+								newModel.setData({
+									rows: data,
+									columns: columnsInfo
+								});
+								dialog.setModel(newModel);
+								dialog.bindColumns("/columns", function(sId, oContext) {
+									var column = oContext.getObject();
+									return new sap.m.Column(column);
+								});
+								dialog.bindAggregation("items", "/rows", function(sId, oContext) {
+									return new sap.m.ColumnListItem({
+										cells: columnsInfo.map(function(column) {
+											var colname = column.template;
+											return new sap.m.Label({
+												text: "{" + colname + "}"
+											});
+										})
+									});
+								});
+							},
+							function() {
+								sap.m.MessageToast.show("Fetch data error");
+							},
+							function() {
+								// dialog.setBusy(false);
+								// setBusy not works correct in this dialog
+								sap.ui.core.BusyIndicator.hide();
+							});
+					};
+					var aTableSelectDialog = new sap.m.TableSelectDialog({
+						title: dimension.MD_BOName,
+						noDataText: "Fill search box and search",
+						search: function(oEvent) {
+							var searchStr = oEvent.getParameter("value");
+							refreshData(resource_uri + "&$search=" + searchStr, aTableSelectDialog);
+						},
+						cancel: function(oEvent) {
+							// avoid indicator appear after canceled
+							sap.ui.core.BusyIndicator.hide();
+						},
+						confirm: function(oEvent) {
+							var oSelectedItem = oEvent.getParameter("selectedItem").getBindingContext().getObject();
+							if (oSelectedItem) {
+								var oInput = sap.ui.getCore().byId(dimension_input_id);
+								var sName = oSelectedItem[dimension.MD_NameField];
+								var sId = oSelectedItem["ObjectID"];
+								var dataModel = oInput.getBindingContext().getObject();
+								dataModel.DimensionName = sName;
+								dataModel.DimensionId = sId;
+								oInput.getBindingContext().getModel().updateBindings();
+							}
+						}
+					});
+					aTableSelectDialog.setBusyIndicatorDelay(0);
+					aTableSelectDialog.open();
 				} else {
-					AjaxUtil.asynchGetJSON(this, sUrl, function(data) {
-						oModel = new sap.ui.model.json.JSONModel();
-						oModel.setData(data);
+					// if dimension is not master data, use valueHelp.fragment.xml
 
-						this._oValueHelpDialog.setModel(oModel);
+					if (oModel) {
 						this.g_filter = new sap.ui.model.Filter("DimensionTypeID", sap.ui.model.FilterOperator.EQ, dimension.DimensionId);
 						oModel.updateBindings();
 						this._oValueHelpDialog.getBinding("items").filter([this.g_filter]);
+					} else {
+						this._oValueHelpDialog.setBusyIndicatorDelay(0);
+						this._oValueHelpDialog.setBusy(true);
+						AjaxUtil.asynchGetJSON(this, sUrl, function(data) {
+							oModel = new sap.ui.model.json.JSONModel();
+							oModel.setData(data);
+							this._oValueHelpDialog.setModel(oModel);
+							this.g_filter = new sap.ui.model.Filter("DimensionTypeID", sap.ui.model.FilterOperator.EQ, dimension.DimensionId);
+							oModel.updateBindings();
+							this._oValueHelpDialog.getBinding("items").filter([this.g_filter]);
+						}, function() {
+							var sPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/dimension_item_sample.json");
+							oModel = new sap.ui.model.json.JSONModel();
+							oModel.loadData(sPath, null, false);
 
-					}, function() {
-						var sPath = jQuery.sap.getModulePath("com.sap.expenseplanning", "/model/dimension_item_sample.json");
-						oModel = new sap.ui.model.json.JSONModel();
-						oModel.loadData(sPath, null, false);
+							this._oValueHelpDialog.setModel(oModel);
+							this.g_filter = new sap.ui.model.Filter("DimensionTypeID", sap.ui.model.FilterOperator.EQ, dimension.DimensionId);
+							oModel.updateBindings();
+							this._oValueHelpDialog.getBinding("items").filter([this.g_filter]);
 
-						this._oValueHelpDialog.setModel(oModel);
-						this.g_filter = new sap.ui.model.Filter("DimensionTypeID", sap.ui.model.FilterOperator.EQ, dimension.DimensionId);
-						oModel.updateBindings();
-						this._oValueHelpDialog.getBinding("items").filter([this.g_filter]);
-
-					}, function() {});
+						}, function() {
+							this._oValueHelpDialog.setBusy(false);
+						});
+					}
+					// toggle compact style
+					jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this._oValueHelpDialog);
+					this._oValueHelpDialog.open();
 				}
-				// toggle compact style
-				jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this._oValueHelpDialog);
-				this._oValueHelpDialog.open();
 			}
 		},
 
@@ -810,6 +891,7 @@ sap.ui.define([
 			};
 			// destination
 			var c4c_my500047_expenseplan_root = this.c4c_my500047_basic_destination + this.c4c_relative_path + "BO_ExpensePlanRootCollection";
+			thisDialog.setBusyIndicatorDelay(0);
 			thisDialog.setBusy(true);
 			// if client want to modify entity, client have to get csrf token first;
 			AjaxUtil.csrfToken(this, c4c_my500047_expenseplan_root, function(x_csrf_token) {
@@ -922,6 +1004,7 @@ sap.ui.define([
 				search: function(event) {
 					var searchKey = sap.ui.getCore().byId(event.getSource().getBasicSearch()).getValue();
 					var employee_uri_search = employee_uri + "&$search=" + searchKey;
+					oValueHelpDialog.setBusyIndicatorDelay(0);
 					oValueHelpDialog.setBusy(true);
 					AjaxUtil.asynchGetJSON(this, employee_uri_search,
 						function(r) {
