@@ -7,10 +7,10 @@ sap.ui.define([
 	"use strict";
 
 	return BaseController.extend("com.sap.expenseplanning.controller.main", {
-		c4c_my323481_basic_destination: "C4C-MY323481-BASIC",
-		c4c_MY323481_destination: "C4C-MY323481",
-		c4c_my500047_destination: "c4c-my500047",
-		c4c_my500047_basic_destination: "C4C-my500047-BASIC",
+		c4c_my323481_basic_destination: "/C4C-MY323481-BASIC",
+		c4c_MY323481_destination: "/C4C-MY323481",
+		c4c_my500047_destination: "/c4c-my500047",
+		c4c_my500047_basic_destination: "/C4C-my500047-BASIC",
 		c4c_service_destination: "SAP_CLOUD_EXT_SERVICE",
 		c4c_relative_path: "/sap/c4c/odata/cust/v1/c4cext/",
 		g_current_cell_context: null,
@@ -33,7 +33,8 @@ sap.ui.define([
 				oList.setBusy(false);
 			};
 
-			var sUrl = this.c4c_my500047_basic_destination + this.c4c_relative_path +
+			var sHost = this.getServiceUrl();
+			var sUrl = sHost + this.c4c_my500047_basic_destination + this.c4c_relative_path +
 				"BO_ExpensePlanRootCollection?$format=json&$expand=BO_ExpensePlanExpenseNode";
 			var oList = this.getView().byId("c4c_data");
 
