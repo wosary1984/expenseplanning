@@ -34,7 +34,7 @@ sap.ui.define([
 			};
 
 			//var sHost = this.getServiceUrl();
-			var sUrl =  this.c4c_my500047_basic_destination + this.c4c_relative_path +
+			var sUrl = this.c4c_my500047_basic_destination + this.c4c_relative_path +
 				"BO_ExpensePlanRootCollection?$format=json&$expand=BO_ExpensePlanExpenseNode";
 			var oList = this.getView().byId("c4c_data");
 
@@ -207,7 +207,8 @@ sap.ui.define([
 			var oData = oSourceList.getModel().getData();
 			var temp;
 			if (object && object.IsCategory) {
-
+				// if press button on dimension
+				// dimension which deleted will re added to diemnsion collections select step
 				if (oSourceList) {
 
 					temp = path.split("/");
@@ -232,13 +233,16 @@ sap.ui.define([
 					this._discardToSecondStep();
 				}
 			} else if (object && !object.IsCategory) {
+				// if press button on dimensionitems
 				temp = path.split("/");
 				temp.splice(temp.length - 1, 1);
 				var sParentPath = temp.join("/");
 				var oParentObject = oSourceList.getModel().getProperty(sParentPath);
-				oParentObject.splice(temp[temp.length - 1], 1);
+				var removeIdx = oParentObject.indexOf(object);
+				if (removeIdx >= 0) {
+					delete oParentObject[removeIdx];
+				}
 				oSourceList.getModel().setData(oData);
-
 				this._discardToSecondStep();
 			}
 		},
@@ -726,7 +730,8 @@ sap.ui.define([
 							if (oSelectedItem) {
 								var oInput = sap.ui.getCore().byId(dimension_input_id);
 								var sName = oSelectedItem[dimension.MD_NameField];
-								var sId = oSelectedItem["ObjectID"];
+								// suppose BO have `bo_nameID` field, or `ID` field, if not, use object id
+								var sId = oSelectedItem[dimension.MD_BOName + "ID"] || oSelectedItem["ID"] || oSelectedItem["ObjectID"];
 								var dataModel = oInput.getBindingContext().getObject();
 								dataModel.DimensionName = sName;
 								dataModel.DimensionId = sId;
