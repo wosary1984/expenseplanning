@@ -15,7 +15,7 @@ sap.ui.define([
 
 		getServiceUrl: function(path) {
 			var host = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "");
-			var url = host + jQuery.sap.getModulePath("com.sap.expenseplanning").replace(/./g,"/");
+			var url = host + jQuery.sap.getModulePath("com.sap.expenseplanning").replace(/\./g,"/");
 			return url;
 		},
 

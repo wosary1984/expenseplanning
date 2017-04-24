@@ -33,8 +33,8 @@ sap.ui.define([
 				oList.setBusy(false);
 			};
 
-			var sHost = this.getServiceUrl();
-			var sUrl = sHost + this.c4c_my500047_basic_destination + this.c4c_relative_path +
+			//var sHost = this.getServiceUrl();
+			var sUrl =  this.c4c_my500047_basic_destination + this.c4c_relative_path +
 				"BO_ExpensePlanRootCollection?$format=json&$expand=BO_ExpensePlanExpenseNode";
 			var oList = this.getView().byId("c4c_data");
 
