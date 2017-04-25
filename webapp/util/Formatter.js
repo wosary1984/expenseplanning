@@ -44,7 +44,8 @@ com.sap.expenseplanning.util.Formatter = {
 					var nodeId = ++simpleId;
 					// this item fields will be used in its children
 					var node_item = {
-						NodeLevel: node.level,
+						// if node not have "level" field, it maybe the root node
+						NodeLevel: node.level || 0,
 						PlanningExpense: {
 							currencyCode: node.Currency,
 							content: "" + node.planningAmount
@@ -89,7 +90,7 @@ com.sap.expenseplanning.util.Formatter = {
 
 		expensePlanWithExpandInfo.nodes = [];
 		// result
-		var Tree = expensePlanWithExpandInfo;
+		var Tree;
 
 		if (expenseNodes) {
 			// use this map to retrive node by id
@@ -104,16 +105,16 @@ com.sap.expenseplanning.util.Formatter = {
 					parentNode.nodes = parentNode.nodes || [];
 					parentNode.nodes.push(node);
 				} else {
-					Tree.nodes.push(node);
+					Tree = node;
 				}
 			});
 		}
 
 		// FormatTreeExpenseInfo
-		Tree.PlanningExpense = Tree.TotalBudget;
 		Tree.Name = expensePlanWithExpandInfo.ExpensePlanName;
 		// refresh this tree expense info 
-		this.calculateTreeExpense(Tree);
+		// c4c will calculate it, so ignore calculate process in ui5
+		// this.calculateTreeExpense(Tree);
 		return Tree;
 	},
 

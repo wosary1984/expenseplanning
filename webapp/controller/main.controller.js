@@ -878,7 +878,9 @@ sap.ui.define([
 				};
 			});
 			// expense plan nodes
-			var expenseplan_expensenode = Formatter.flatTree(model.Tree[0], expenseplan_dimensions);
+			var expenseplan_expensenode = Formatter.flatTree({
+				nodes: model.Tree
+			});
 			// expense plan
 			var expenseplan_root = {
 				Activation: model.Activation,
