@@ -960,8 +960,6 @@ sap.ui.define([
 					expensePlanInfo.setModel(oModel);
 					expensePlanInfo.open();
 				});
-
-			// how to set model ? 
 			this.getView().addDependent(expensePlanInfo);
 			jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), expensePlanInfo);
 		},

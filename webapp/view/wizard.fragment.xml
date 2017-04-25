@@ -117,7 +117,7 @@
 													<table:Column width="70%">
 														<Label text="Dimension"/>
 														<table:template>
-															<Input value="{DimensionId} {DimensionName}" type="Text" textFormatMode="KeyValue" showSuggestion="false"
+															<Input value="{DimensionId} {DimensionName}" type="Text" showSuggestion="false"
 																showValueHelp="{= ${IsCategory} === true ? false : true }" editable="{= ${IsCategory} ===true ? false : true }"
 																valueHelpRequest="onValueHelpPress" valueState="{path:'DimensionName', formatter:'com.sap.expenseplanning.util.Formatter.valuteState'}"
 																valueStateText="Please Enter Dimension" change="onDimensionTextChange">
