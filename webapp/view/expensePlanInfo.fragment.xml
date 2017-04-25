@@ -34,14 +34,13 @@
 				</form:SimpleForm>
 				<form:SimpleForm title="Expense Planning Structure" minWidth="1024" editable="false" layout="ResponsiveGridLayout">
 					<form:content>
-						<Label text="Planning Structure" design="Bold"/>
-						<table:TreeTable selectionMode="None" rows="{path: '/Tree', parameters: {'arrayNames': ['nodes']}}">
+						<table:TreeTable expandFirstLevel="true" selectionMode="None" rows="{path: '/Tree', parameters: {'arrayNames': ['nodes']}}">
 							<table:columns>
 								<table:Column>
 									<Label text="Node Name"/>
 									<table:template>
 										<Label text="Name"/>
-										<Text text="{Name}"/>
+										<Text text="{= ${DimensionItemRef}||${Name}}"/>
 									</table:template>
 								</table:Column>
 								<table:Column>
@@ -62,6 +61,13 @@
 										<Text text="{UsedExpense/content} {UsedExpense/currencyCode}"/>
 									</table:template>
 								</table:Column>
+								<table:Column>
+									<Label text="Desc"/>
+									<table:template>
+										<Label text="Name"/>
+										<Text text="{Name}"/>
+									</table:template>
+								</table:Column>
 							</table:columns>
 						</table:TreeTable>
 					</form:content>
@@ -70,7 +76,6 @@
 			<footer>
 				<Toolbar>
 					<ToolbarSpacer/>
-					<Button text="Modify"></Button>
 					<Button text="Close" press="onPlanInfoClose"></Button>
 				</Toolbar>
 			</footer>
