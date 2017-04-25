@@ -87,8 +87,7 @@ com.sap.expenseplanning.util.Formatter = {
 
 		// please make sure field of expenseplannode is correct
 		var expenseNodes = expensePlanWithExpandInfo.BO_ExpensePlanExpenseNode;
-
-		expensePlanWithExpandInfo.nodes = [];
+		
 		// result
 		var Tree;
 
@@ -99,7 +98,8 @@ com.sap.expenseplanning.util.Formatter = {
 				return pre;
 			}, {});
 			// construct tree
-			Object.values(dataMap).forEach(function(node) {
+			for (var nodeId in dataMap) {
+				var node = dataMap[nodeId];
 				if (node.ParentExpenseNodeId) {
 					var parentNode = dataMap[node.ParentExpenseNodeId];
 					parentNode.nodes = parentNode.nodes || [];
@@ -107,7 +107,7 @@ com.sap.expenseplanning.util.Formatter = {
 				} else {
 					Tree = node;
 				}
-			});
+			}
 		}
 
 		// FormatTreeExpenseInfo
