@@ -111,7 +111,7 @@
 											</Toolbar>
 										</headerToolbar>
 										<content>
-											<table:TreeTable id="idTargetDimensions" rows="{path:'/DimensionCollection'}" selectionMode="MultiToggle" enableSelectAll="false"
+											<table:TreeTable id="idTargetDimensions" rows="{path:'/DimensionCollection'}" selectionMode="None" enableSelectAll="false"
 												expandFirstLevel="true" visibleRowCount="5" cellClick="onCellClicked">
 												<table:columns>
 													<table:Column width="70%">
@@ -204,7 +204,7 @@
 								</WizardStep>
 								<WizardStep id="SetDetailStep" validated="false" activate="optionalStepActivation" title="Planning Structure">
 									<MessageStrip text="Elaboration" showIcon="true"/>
-									<table:TreeTable id="idPlanning" rows="{path:'/Tree'}" selectionMode="MultiToggle" enableSelectAll="false" visibleRowCount="5"
+									<table:TreeTable id="idPlanning" rows="{path:'/Tree'}" selectionMode="None" enableSelectAll="false" visibleRowCount="5"
 										expandFirstLevel="true" ariaLabelledBy="title" cellClick="onCellClicked">
 										<table:toolbar>
 											<Toolbar>

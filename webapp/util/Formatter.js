@@ -87,7 +87,7 @@ com.sap.expenseplanning.util.Formatter = {
 
 		// please make sure field of expenseplannode is correct
 		var expenseNodes = expensePlanWithExpandInfo.BO_ExpensePlanExpenseNode;
-		
+
 		// result
 		var Tree;
 
@@ -116,6 +116,40 @@ com.sap.expenseplanning.util.Formatter = {
 		// c4c will calculate it, so ignore calculate process in ui5
 		// this.calculateTreeExpense(Tree);
 		return Tree;
+	},
+
+	checkWholeTreePlanningAmount: function(root) {
+
+		var result = true;
+
+		var calculateNodesTotalAmount = function(parent) {
+			var res = 0;
+			if (parent.nodes && parent.nodes.reduce) {
+				res = parent.nodes.reduce(function(acc, cur) {
+					return acc + parseInt(cur.planningAmount, 10);
+				}, 0);
+			}
+			return res;
+		};
+
+		var checkAmount = function(parent) {
+			if (parent && parent.nodes) {
+				var childsTotalAmount = calculateNodesTotalAmount(parent);
+				var parentPlanningAmount = parseInt(parent.planningAmount, 10);
+				if (childsTotalAmount !== parentPlanningAmount) {
+					result = false;
+					return;
+				}
+				parent.nodes.forEach(function(node) {
+					if (node.nodes) {
+						checkAmount(node);
+					}
+				});
+			}
+		};
+		
+		checkAmount(root);
+		return result;
 	},
 
 	calculateTreeExpense: function(root) {

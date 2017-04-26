@@ -417,6 +417,10 @@ sap.ui.define([
 					this._setWizardNextButtonText("preview");
 
 				} else if (iProgress === 3) {
+					if (!Formatter.checkWholeTreePlanningAmount(oEvent.getSource().getModel().getData().Tree[0])) {
+						sap.m.MessageToast.show("Please Check Planning Structure");
+						return;
+					}
 					if (this._thirdStepValidation()) {
 						var oNavContainer = sap.ui.getCore().byId("wizardContainer");
 						oNavContainer.to(this._getReviewPage());
@@ -829,32 +833,50 @@ sap.ui.define([
 			var oModel = oSource.getBindingContext().getModel();
 			var sPath = oSource.getBindingContext().getPath();
 			var oCurrentObject = oModel.getProperty(sPath);
+			oCurrentObject.planningAmount = newValue;
 
 			var temp = sPath.split("/");
-			var currentIndex = temp[temp.length - 1];
-			temp.splice(temp.length - 1, 1);
+			temp.splice(temp.length - 2);
 			var sParentPath = temp.join("/");
 
-			var objects = oModel.getProperty(sParentPath);
-
-			var iTotal = 0;
-			var iParent = Number(oCurrentObject.parentAmount);
-			for (var x in objects) {
-				if (x !== currentIndex) {
-					iTotal += Number(objects[x].planningAmount);
-
-					// clear other planning amount value state
-					objects[x].valueState = "None";
-					objects[x].valueStateText = "";
+			var parentObject = oModel.getProperty(sParentPath);
+			// get the sum of all node planning amount of a node 
+			var calculateNodesTotalAmount = function(parent) {
+				var res = 0;
+				if (parent.nodes && parent.nodes.reduce) {
+					res = parent.nodes.reduce(function(acc, cur) {
+						return acc + parseInt(cur.planningAmount, 10);
+					}, 0);
 				}
-			}
+				return res;
+			};
+			// if nodes'sum not match its' parent, change nodes' valuestate
+			var refreshNodesState = function(parent) {
+				if (parent && parent.nodes) {
+					var childsTotalAmount = calculateNodesTotalAmount(parent);
+					var childValueState = "None";
+					var childValueStateText = "";
+					var parentPlanningAmount = parseInt(parent.planningAmount, 10);
+					if (childsTotalAmount > parentPlanningAmount) {
+						childValueState = "Error";
+						childValueStateText = "Childs total planning amount MORE than Parent planning Amount!";
+					} else if (childsTotalAmount < parentPlanningAmount) {
+						childValueState = "Error";
+						childValueStateText = "Childs total planning amount LESS than Parent planning Amount!";
+					}
+					parent.nodes.forEach(function(node) {
+						node.valueState = childValueState;
+						node.valueStateText = childValueStateText;
+						if (node.nodes) {
+							refreshNodesState(node);
+						}
+					});
+				}
+			};
 
-			if (iTotal + Number(newValue) !== iParent) {
-				oSource.setValueState("Error");
-				oSource.setValueStateText("Childs Total Planning Amount is not Match Parent Amount!");
-			} else {
-				oSource.setValueState("None");
-			}
+			refreshNodesState(parentObject);
+
+			oModel.updateBindings();
 
 		},
 
