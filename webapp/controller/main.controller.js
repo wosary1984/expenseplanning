@@ -619,9 +619,10 @@ sap.ui.define([
 		},
 
 		onAddChildDimensionButtonPress: function(oEvent) {
-			if (this.g_current_cell_context) {
-				var sPath = this.g_current_cell_context.getPath();
-				var object = this.g_current_cell_context.getModel().getObject(sPath);
+			var row = oEvent.getSource().getParent().getParent();
+			if (row) {
+				var sPath = row.getBindingContext().getPath();
+				var object = row.getModel().getObject(sPath);
 				var child = {};
 				child.DimensionDesc = "";
 				child.DimensionId = "";
@@ -632,7 +633,7 @@ sap.ui.define([
 					object.nodes = [];
 				}
 				object.nodes.push(child);
-				this.g_current_cell_context.getModel().updateBindings();
+				row.getModel().updateBindings();
 				this._discardToSecondStep();
 				sap.ui.getCore().byId("idTargetDimensions").expandToLevel(1);
 			}
