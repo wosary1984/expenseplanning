@@ -39,7 +39,7 @@
 										<Label text="Plan Description"/>
 										<TextArea value="{/planningDesc}"/>
 										<Label text="Responseible Employee"/>
-										<Input value="{/employee}" valueHelpRequest="onEmployeeValueHelp" showValueHelp="true"/>
+										<Input value="{/employee}" valueHelpOnly='true' valueHelpRequest="onEmployeeValueHelp" showValueHelp="true"/>
 										<Label text="Plan Amount" required="true"/>
 										<Input value="{/planningAmount}" required="true" type="Number">
 											<customData>
@@ -117,10 +117,10 @@
 													<table:Column width="70%">
 														<Label text="Dimension"/>
 														<table:template>
-															<Input value="{DimensionId} {DimensionName}" type="Text" showSuggestion="false"
-																showValueHelp="{= ${IsCategory} === true ? false : true }" editable="{= ${IsCategory} ===true ? false : true }"
-																valueHelpRequest="onValueHelpPress" valueState="{path:'DimensionName', formatter:'com.sap.expenseplanning.util.Formatter.valuteState'}"
-																valueStateText="Please Enter Dimension" change="onDimensionTextChange">
+															<Input value="{DimensionId} {DimensionName}" type="Text" showSuggestion="false" showValueHelp="{= ${IsCategory} === true ? false : true }"
+																editable="{= ${IsCategory} ===true ? false : true }" valueHelpOnly='true' valueHelpRequest="onValueHelpPress"
+																valueState="{path:'DimensionName', formatter:'com.sap.expenseplanning.util.Formatter.valuteState'}" valueStateText="Please Enter Dimension"
+																change="onDimensionTextChange">
 																<customData>
 																	<core:CustomData key="level" value="{level}"/>
 																</customData>
