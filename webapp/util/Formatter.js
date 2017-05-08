@@ -41,6 +41,15 @@ com.sap.expenseplanning.util.Formatter = {
 		function addNodes(entry, parent) {
 			if (entry && entry.length > 0) {
 				entry.forEach(function(node) {
+					var dimensionInfos = [];
+					if (parent) {
+						var nodeDimensionInfo = {
+							DimensionID: node.DimensionId,
+							DimensionItemRef: node.DimensionItemRef
+						};
+						dimensionInfos = parent.BO_ExpensePlanDimensionInfo.concat(nodeDimensionInfo);
+					}
+
 					var nodeId = ++simpleId;
 					// this item fields will be used in its children
 					var node_item = {
@@ -64,7 +73,8 @@ com.sap.expenseplanning.util.Formatter = {
 						DimensionItemRef: node.DimensionItemRef,
 						Name: (parent && (parent.Name + "-") || "") + node.text,
 						ExpenseNodeId: "" + nodeId,
-						ParentExpenseNodeId: (parent && parent.ExpenseNodeId) || ""
+						ParentExpenseNodeId: (parent && parent.ExpenseNodeId) || "",
+						BO_ExpensePlanDimensionInfo: dimensionInfos
 					};
 					res.push(node_item);
 					// Recursively add nodes
@@ -147,7 +157,7 @@ com.sap.expenseplanning.util.Formatter = {
 				});
 			}
 		};
-		
+
 		checkAmount(root);
 		return result;
 	},
