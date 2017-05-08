@@ -18,13 +18,15 @@
 		<link rel="stylesheet" type="text/css" href="css/style.css">
 
 		<script>
-			sap.ui.getCore().attachInit(function() {
-				new sap.m.Shell({
-					app: new sap.ui.core.ComponentContainer({
+		var app = new sap.ui.core.ComponentContainer({
 						height : "100%",
 						width:"100%",
 						name : "com.sap.expenseplanning"
-					}),
+					});
+		sap.ui.getCore().getMessageManager().registerObject(app, true);
+		sap.ui.getCore().attachInit(function() {
+				new sap.m.Shell({
+					app: app,
 					appWidthLimited : false
 				}).placeAt("content");
 			});

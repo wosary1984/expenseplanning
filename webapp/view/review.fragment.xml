@@ -14,12 +14,8 @@
 					<Text text="{/endDate}" />
 					<Label text="Plan Name" design="Bold" />
 					<Text text="{/planningName}" />
-					<Label text="Company" design="Bold" />
-					<Text text="{/company}" />
 					<Label text="Responseible Employee" design="Bold" />
 					<Text text="{/employee}" />
-					<Label text="Manager" design="Bold" />
-					<Text text="{/manager}" />
 					<Label text="Plan Amount" design="Bold" />
 					<Text text="{/planningAmount}" />
 					<Label text="Plan Amount Currency" design="Bold" />

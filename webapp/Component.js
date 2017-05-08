@@ -8,7 +8,8 @@ sap.ui.define([
 	return UIComponent.extend("com.sap.expenseplanning.Component", {
 
 		metadata: {
-			manifest: "json"
+			manifest: "json",
+			handleValidation: true
 		},
 
 		/**
